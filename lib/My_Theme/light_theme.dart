@@ -20,6 +20,10 @@ class LightTheme extends BaseLine {
   @override
   ThemeData get themeData => ThemeData(
         scaffoldBackgroundColor: scaffoldBackgroundColor,
+        appBarTheme: AppBarTheme(
+          backgroundColor: scaffoldBackgroundColor,
+          centerTitle: true,
+        ),
         primaryColor: primaryColor,
         focusColor: focusColor,
         textTheme: TextTheme(
