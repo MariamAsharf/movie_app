@@ -19,29 +19,33 @@ class DarkTheme extends BaseLine {
 
   @override
   ThemeData get themeData => ThemeData(
-    scaffoldBackgroundColor: scaffoldBackgroundColor,
-    primaryColor: primaryColor,
-    focusColor: focusColor,
-    textTheme: TextTheme(
-      titleSmall: GoogleFonts.roboto(
-          fontSize: 16, fontWeight: FontWeight.w700, color: textColor),
-      titleMedium: GoogleFonts.roboto(
-          fontSize: 20, fontWeight: FontWeight.w700, color: textColor),
-      titleLarge: GoogleFonts.roboto(
-          fontSize: 24, fontWeight: FontWeight.w700, color: textColor),
-    ),
-    bottomNavigationBarTheme: BottomNavigationBarThemeData(
-      backgroundColor: focusColor,
-      selectedItemColor: primaryColor,
-      unselectedItemColor: textColor,
-      showSelectedLabels: false,
-      showUnselectedLabels: false,
-      type: BottomNavigationBarType.fixed,
-    ),
-    elevatedButtonTheme: ElevatedButtonThemeData(
-      style: ButtonStyle(
-        backgroundColor: WidgetStatePropertyAll(primaryColor),
-      ),
-    ),
-  );
+        scaffoldBackgroundColor: scaffoldBackgroundColor,
+        appBarTheme: AppBarTheme(
+          backgroundColor: scaffoldBackgroundColor,
+          centerTitle: true,
+        ),
+        primaryColor: primaryColor,
+        focusColor: focusColor,
+        textTheme: TextTheme(
+          titleSmall: GoogleFonts.roboto(
+              fontSize: 16, fontWeight: FontWeight.w700, color: textColor),
+          titleMedium: GoogleFonts.roboto(
+              fontSize: 20, fontWeight: FontWeight.w700, color: textColor),
+          titleLarge: GoogleFonts.roboto(
+              fontSize: 24, fontWeight: FontWeight.w700, color: textColor),
+        ),
+        bottomNavigationBarTheme: BottomNavigationBarThemeData(
+          backgroundColor: focusColor,
+          selectedItemColor: primaryColor,
+          unselectedItemColor: textColor,
+          showSelectedLabels: false,
+          showUnselectedLabels: false,
+          type: BottomNavigationBarType.fixed,
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ButtonStyle(
+            backgroundColor: WidgetStatePropertyAll(primaryColor),
+          ),
+        ),
+      );
 }

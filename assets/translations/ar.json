@@ -1,0 +1,19 @@
+{
+  "name": "الاسم",
+  "phone_number": "رقم الهاتف",
+  "email": "البريد الإلكتروني",
+  "password": "كلمة المرور",
+  "re_password": "إعادة إدخال كلمة المرور",
+  "forget_password?": "هل نسيت كلمة المرور؟",
+  "forget_password": "هل نسيت كلمة المرور",
+  "login": "تسجيل الدخول",
+  "dont_have_account?": "ليس لديك حساب؟",
+  "create_account": "إنشاء حساب",
+  "or": "أو",
+  "login_with_google": "تسجيل الدخول عبر Google",
+  "register": "تسجيل",
+  "reset_password":"إعادة تعيين كلمة المرور",
+  "already_have_account?":"لديك حساب بالفعل؟"
+
+
+}
