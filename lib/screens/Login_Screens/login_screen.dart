@@ -24,18 +24,15 @@ class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocConsumer<AuthCubit, AuthStates>(
       listener: (context, state) {
-        if (state is RegisterSuccesStates) {
-          Navigator.pushReplacementNamed(context, ForgetPasswordScreen.routeName);
-        } else if (state is FailedToRegisterStates) {
+        if (state is LoginSuccesStates) {
+          Navigator.pushReplacementNamed(
+              context, ForgetPasswordScreen.routeName);
+        } else if (state is FailedToLoginStates) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Container(
-                height: 40,
-                alignment: Alignment.bottomCenter,
-                child: Text(
-                  state.message,
-                  style: Theme.of(context).textTheme.titleSmall,
-                ),
+              content: Text(
+                state.message,
+                style: Theme.of(context).textTheme.titleSmall,
               ),
             ),
           );
@@ -54,8 +51,9 @@ class LoginScreen extends StatelessWidget {
                 children: [
                   Image.asset(
                     "assets/images/movie.png",
+                    height: 118,
                   ),
-                  SizedBox(height: 24),
+                  SizedBox(height: 69),
                   Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(16),
@@ -63,8 +61,8 @@ class LoginScreen extends StatelessWidget {
                     ),
                     child: TextFormField(
                       controller: emailController,
-                      validator: (input) {
-                        if (emailController.text.isEmpty) {
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
                           return "Email Must Not Be Empty";
                         } else {
                           return null;
@@ -103,8 +101,8 @@ class LoginScreen extends StatelessWidget {
                     ),
                     child: TextFormField(
                       controller: passwordController,
-                      validator: (input) {
-                        if (passwordController.text.isEmpty) {
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
                           return "Password Must Not Be Empty";
                         } else {
                           return null;

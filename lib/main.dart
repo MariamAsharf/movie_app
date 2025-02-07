@@ -1,9 +1,11 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movie_app/My_Theme/dark_theme.dart';
 import 'package:movie_app/My_Theme/theme.dart';
 import 'package:movie_app/authentication/auth_cupit.dart';
+import 'package:movie_app/firebase_options.dart';
 import 'package:movie_app/screens/Login_Screens/forget_password_screen.dart';
 import 'package:movie_app/screens/Login_Screens/login_screen.dart';
 import 'package:movie_app/screens/Login_Screens/register_screen.dart';
@@ -14,6 +16,9 @@ import 'My_Theme/light_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   await EasyLocalization.ensureInitialized();
   runApp(ChangeNotifierProvider(
     create: (context) => MyProvider(),
