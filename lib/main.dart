@@ -1,10 +1,13 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:movie_app/Model/movie_details_response.dart';
 import 'package:movie_app/My_Theme/dark_theme.dart';
 import 'package:movie_app/My_Theme/theme.dart';
 import 'package:movie_app/authentication/auth_cupit.dart';
 import 'package:movie_app/onboarding_screen.dart';
+import 'package:movie_app/screens/Home_Screens/home_screen.dart';
+import 'package:movie_app/screens/Home_Screens/movie_details/movie_details.dart';
 import 'package:movie_app/screens/Login_Screens/forget_password_screen.dart';
 import 'package:movie_app/screens/Login_Screens/login_screen.dart';
 import 'package:movie_app/screens/Login_Screens/register_screen.dart';
@@ -52,6 +55,9 @@ class MovieApp extends StatelessWidget {
         locale: context.locale,
         initialRoute: OnboardingScreen.routeName,
         routes: {
+          MovieDetailScreen.routeName:(context)=>MovieDetailScreen(movieId: 550),
+
+          HomeScreen.routeName:(context)=>HomeScreen(),
           OnboardingScreen.routeName: (context) => OnboardingScreen(),
           LoginScreen.routeName: (context) => LoginScreen(),
           RegisterScreen.routeName: (context) => RegisterScreen(),
