@@ -5,8 +5,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:movie_app/authentication/auth_cupit.dart';
 import 'package:movie_app/authentication/auth_states.dart';
+import 'package:movie_app/screens/Auth_Screens/register_screen.dart';
 import 'package:movie_app/screens/Home_Screens/home_screen.dart';
-import 'package:movie_app/screens/Login_Screens/register_screen.dart';
 
 import 'package:toggle_switch/toggle_switch.dart';
 

@@ -1,46 +1,47 @@
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/material.dart';
-import 'package:movie_app/screens/Login_Screens/login_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 
+import 'login_screen.dart';
 
 class ForgetPasswordScreen extends StatelessWidget {
   static const String routeName = "Forget Password Screen";
 
   ForgetPasswordScreen({super.key});
+
   final TextEditingController emailController = TextEditingController();
   final formKey = GlobalKey<FormState>();
 
   void _verifyEmail(BuildContext context) async {
-  if (!formKey.currentState!.validate()) return;
+    if (!formKey.currentState!.validate()) return;
 
-  final email = emailController.text.trim();
-  
-  try {
-    await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
-    
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Verification Sent"),
-        content: Text("A password reset link has been sent to $email."),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              Navigator.pushReplacementNamed(context, LoginScreen.routeName);
-            },
-            child: const Text("OK"),
-          ),
-        ],
-      ),
-    );
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Error: ${e.toString()}")),
-    );
+    final email = emailController.text.trim();
+
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text("Verification Sent"),
+          content: Text("A password reset link has been sent to $email."),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.pushReplacementNamed(context, LoginScreen.routeName);
+              },
+              child: const Text("OK"),
+            ),
+          ],
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error: ${e.toString()}")),
+      );
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +50,10 @@ class ForgetPasswordScreen extends StatelessWidget {
         iconTheme: IconThemeData(color: Theme.of(context).primaryColor),
         title: Text(
           "forget_password".tr(),
-          style: Theme.of(context).textTheme.titleMedium!.copyWith(color: Theme.of(context).primaryColor),
+          style: Theme.of(context)
+              .textTheme
+              .titleMedium!
+              .copyWith(color: Theme.of(context).primaryColor),
         ),
       ),
       body: Padding(
@@ -73,7 +77,7 @@ class ForgetPasswordScreen extends StatelessWidget {
                       return "Email Must Not Be Empty";
                     }
                     final bool emailValid = RegExp(
-                        r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                            r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
                         .hasMatch(value);
                     if (!emailValid) {
                       return "Email Not Valid";

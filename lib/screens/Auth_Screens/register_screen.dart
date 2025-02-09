@@ -1,6 +1,3 @@
-import 'dart:developer';
-import 'dart:math';
-
 import 'package:avatar_plus/avatar_plus.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -10,10 +7,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:movie_app/authentication/auth_cupit.dart';
 import 'package:movie_app/authentication/auth_states.dart';
-import 'package:movie_app/screens/Login_Screens/login_screen.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 
-import 'forget_password_screen.dart';
+import 'login_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
   static const String routeName = "Register Screen";
