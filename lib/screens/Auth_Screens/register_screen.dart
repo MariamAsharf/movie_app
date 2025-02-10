@@ -32,7 +32,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   var passwordController = TextEditingController();
 
   var rePasswordController = TextEditingController();
-  int selectedAvatarId = 1;
+  int selectedAvaterId = 1;
 
   @override
   Widget build(BuildContext context) {
@@ -90,9 +90,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         return GestureDetector(
                           onTap: () {
                             setState(() {
-                              selectedAvatarId = index + 1;
+                              selectedAvaterId = index + 1;
                             });
-                            print("Selected Avatar ID: $selectedAvatarId");
+                            print("Selected Avatar ID: $selectedAvaterId");
                           },
                           child: AvatarPlus(
                             "$index",
@@ -313,7 +313,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                         ),
                         onPressed: () {
-                          print("Selected Avatar ID: $selectedAvatarId");
+                          print("Selected Avatar ID: $selectedAvaterId");
                           if (formKey.currentState!.validate()) {
                             BlocProvider.of<AuthCubit>(context).register(
                                 email: emailController.text,
@@ -321,7 +321,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 name: nameController.text,
                                 phone: phoneController.text,
                                 confirmPassword: rePasswordController.text,
-                                avatarId: selectedAvatarId);
+                                avaterId: selectedAvaterId);
                           }
                         },
                         child: Text(

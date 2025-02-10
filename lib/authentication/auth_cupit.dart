@@ -19,7 +19,7 @@ class AuthCubit extends Cubit<AuthStates> {
     required String phone,
     required String password,
     required String confirmPassword,
-    required int avatarId,
+    required int avaterId,
   }) async {
     emit(RegisterLoadingStates());
     try {
@@ -31,7 +31,7 @@ class AuthCubit extends Cubit<AuthStates> {
           "phone": phone,
           "password": password,
           "confirmPassword": confirmPassword,
-          "avatarId": avatarId
+          "avaterId": avaterId.toInt()
         }),
       );
       var responseBody = jsonDecode(response.body);

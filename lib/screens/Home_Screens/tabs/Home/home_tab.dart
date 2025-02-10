@@ -16,8 +16,8 @@ class HomeTab extends StatelessWidget {
         if (state is ApiLoadingStates) {
           return Center(child: CircularProgressIndicator());
         } else if (state is ApiSuccessStates) {
-          SourceResponse sourceResponse = state.data as SourceResponse; // ✅ استخراج البيانات
-          List<Results> movies = sourceResponse.results ?? []; // ✅ التأكد من عدم وجود null
+          SourceResponse sourceResponse = state.data as SourceResponse;
+          List<Results> movies = sourceResponse.results ?? [];
 
           return SingleChildScrollView(
             child: Column(
@@ -26,8 +26,6 @@ class HomeTab extends StatelessWidget {
                   alignment: Alignment.topCenter,
                   child: Image.asset("assets/images/available.png", width: 220, height: 80),
                 ),
-
-                /// 🔹 **سلايدر الأفلام**
                 Container(
                   height: 300,
                   child: CarouselSlider(
@@ -85,13 +83,10 @@ class HomeTab extends StatelessWidget {
                     }).toList(),
                   ),
                 ),
-
                 Container(
                   alignment: Alignment.topCenter,
                   child: Image.asset("assets/images/watch.png", width: 354, height: 146),
                 ),
-
-                /// 🔹 **عنوان القسم**
                 Padding(
                   padding: EdgeInsets.only(left: 20),
                   child: Row(
@@ -106,13 +101,11 @@ class HomeTab extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 30),
-
-                /// 🔹 **قائمة الأفلام الأفقية**
                 SizedBox(
                   height: 200,
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
-                    itemCount: movies.length, // ✅ التأكد من العدد الصحيح
+                    itemCount: movies.length,
                     itemBuilder: (context, index) {
                       var item = movies[index];
 
