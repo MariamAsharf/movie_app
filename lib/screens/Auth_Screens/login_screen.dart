@@ -177,13 +177,14 @@ class LoginScreen extends StatelessWidget {
                           ),
                         ),
                         onPressed: () {
-                          if (formKey.currentState!.validate()) {
-                            BlocProvider.of<AuthCubit>(context).login(
-                              email: emailController.text,
-                              password: passwordController.text,
+                          Navigator.pushNamed(context, HomeScreen.routeName
+                          //if (formKey.currentState!.validate()) {
+                            //BlocProvider.of<AuthCubit>(context).login(
+                             // email: emailController.text,
+                             // password: passwordController.text,
                             );
-                          }
-                        },
+                          },
+
                         child: Text(
                           state is LoginLoadingStates
                               ? "Loading..."
