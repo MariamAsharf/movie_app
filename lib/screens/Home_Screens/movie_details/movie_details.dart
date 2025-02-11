@@ -21,7 +21,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
     super.initState();
     context.read<MoviesCubit>().getMovieDetails(widget.movieId);
   }
-
+//refacting movie screen
   @override
   Widget build(BuildContext context) {
     return Scaffold(
