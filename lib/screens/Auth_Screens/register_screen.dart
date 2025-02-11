@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:movie_app/authentication/auth_cupit.dart';
-import 'package:movie_app/authentication/auth_states.dart';
+import 'package:movie_app/Blocs/auth_cupit.dart';
+import 'package:movie_app/Blocs/auth_states.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 
 import 'login_screen.dart';
