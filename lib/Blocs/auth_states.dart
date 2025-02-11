@@ -12,16 +12,3 @@ class FailedToLoginStates extends AuthStates {
   FailedToLoginStates({required this.message});
 }
 class LoginSuccesStates extends AuthStates {}
-
-
-
-class ApiLoadingStates extends AuthStates {}
-class ApiSuccessStates extends AuthStates {
-  final dynamic data;
-  ApiSuccessStates({required this.data});
-}
-class ApiFailedStates extends AuthStates {
-  final String message;
-  ApiFailedStates({required this.message});
-
-}
