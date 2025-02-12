@@ -1,9 +1,11 @@
 class ImagesResponse {
-  ImagesResponse({
-    this.backdrops,
-    this.id,
-    this.logos,
-    this.posters,});
+  ImagesResponse(
+      {this.backdrops,
+      this.id,
+      this.logos,
+      this.posters,
+      this.status_message,
+      this.status_code});
 
   ImagesResponse.fromJson(dynamic json) {
     if (json['backdrops'] != null) {
@@ -25,11 +27,17 @@ class ImagesResponse {
         posters?.add(Posters.fromJson(v));
       });
     }
+
+    status_code = json['status_code'];
+    status_message = json['status_message'];
   }
+
   List<Backdrops>? backdrops;
   int? id;
   List<Logos>? logos;
   List<Posters>? posters;
+  String? status_code;
+  String? status_message;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -45,7 +53,6 @@ class ImagesResponse {
     }
     return map;
   }
-
 }
 
 class Posters {
@@ -56,7 +63,8 @@ class Posters {
     this.filePath,
     this.voteAverage,
     this.voteCount,
-    this.width,});
+    this.width,
+  });
 
   Posters.fromJson(dynamic json) {
     aspectRatio = json['aspect_ratio'];
@@ -67,6 +75,7 @@ class Posters {
     voteCount = json['vote_count'];
     width = json['width'];
   }
+
   double? aspectRatio;
   int? height;
   String? iso6391;
@@ -86,7 +95,6 @@ class Posters {
     map['width'] = width;
     return map;
   }
-
 }
 
 class Logos {
@@ -97,7 +105,8 @@ class Logos {
     this.filePath,
     this.voteAverage,
     this.voteCount,
-    this.width,});
+    this.width,
+  });
 
   Logos.fromJson(dynamic json) {
     aspectRatio = json['aspect_ratio'];
@@ -108,6 +117,7 @@ class Logos {
     voteCount = json['vote_count'];
     width = json['width'];
   }
+
   double? aspectRatio;
   int? height;
   String? iso6391;
@@ -127,7 +137,6 @@ class Logos {
     map['width'] = width;
     return map;
   }
-
 }
 
 class Backdrops {
@@ -138,7 +147,8 @@ class Backdrops {
     this.filePath,
     this.voteAverage,
     this.voteCount,
-    this.width,});
+    this.width,
+  });
 
   Backdrops.fromJson(dynamic json) {
     aspectRatio = json['aspect_ratio'];
@@ -149,6 +159,7 @@ class Backdrops {
     voteCount = json['vote_count'];
     width = json['width'];
   }
+
   double? aspectRatio;
   int? height;
   dynamic iso6391;
@@ -168,5 +179,4 @@ class Backdrops {
     map['width'] = width;
     return map;
   }
-
 }

@@ -4,6 +4,8 @@ class SourceResponse {
     this.results,
     this.totalPages,
     this.totalResults,
+    this.status_message,
+    this.status_code,
 
   });
 
@@ -17,12 +19,17 @@ class SourceResponse {
     }
     totalPages = json['total_pages'];
     totalResults = json['total_results'];
+    status_code = json['status_code'];
+    status_message = json['status_message'];
+
   }
 
   int? page;
   List<Results>? results;
   int? totalPages;
   int? totalResults;
+  String? status_code;
+  String? status_message;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
