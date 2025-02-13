@@ -1,31 +1,33 @@
 class MovieDetailsResponse {
-  MovieDetailsResponse({
-    this.adult,
-    this.backdropPath,
-    this.belongsToCollection,
-    this.budget,
-    this.genres,
-    this.homepage,
-    this.id,
-    this.imdbId,
-    this.originCountry,
-    this.originalLanguage,
-    this.originalTitle,
-    this.overview,
-    this.popularity,
-    this.posterPath,
-    this.productionCompanies,
-    this.productionCountries,
-    this.releaseDate,
-    this.revenue,
-    this.runtime,
-    this.spokenLanguages,
-    this.status,
-    this.tagline,
-    this.title,
-    this.video,
-    this.voteAverage,
-    this.voteCount,});
+  MovieDetailsResponse(
+      {this.adult,
+      this.backdropPath,
+      this.belongsToCollection,
+      this.budget,
+      this.genres,
+      this.homepage,
+      this.id,
+      this.imdbId,
+      this.originCountry,
+      this.originalLanguage,
+      this.originalTitle,
+      this.overview,
+      this.popularity,
+      this.posterPath,
+      this.productionCompanies,
+      this.productionCountries,
+      this.releaseDate,
+      this.revenue,
+      this.runtime,
+      this.spokenLanguages,
+      this.status,
+      this.tagline,
+      this.title,
+      this.video,
+      this.voteAverage,
+      this.voteCount,
+      this.status_code,
+      this.status_message});
 
   MovieDetailsResponse.fromJson(dynamic json) {
     adult = json['adult'];
@@ -41,7 +43,9 @@ class MovieDetailsResponse {
     homepage = json['homepage'];
     id = json['id'];
     imdbId = json['imdb_id'];
-    originCountry = json['origin_country'] != null ? json['origin_country'].cast<String>() : [];
+    originCountry = json['origin_country'] != null
+        ? json['origin_country'].cast<String>()
+        : [];
     originalLanguage = json['original_language'];
     originalTitle = json['original_title'];
     overview = json['overview'];
@@ -74,7 +78,11 @@ class MovieDetailsResponse {
     video = json['video'];
     voteAverage = json['vote_average'];
     voteCount = json['vote_count'];
+    status_code = json['status_code'];
+    status_message = json['status_message'];
+
   }
+
   bool? adult;
   String? backdropPath;
   dynamic belongsToCollection;
@@ -101,6 +109,8 @@ class MovieDetailsResponse {
   bool? video;
   double? voteAverage;
   int? voteCount;
+  String? status_code;
+  String? status_message;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -121,16 +131,19 @@ class MovieDetailsResponse {
     map['popularity'] = popularity;
     map['poster_path'] = posterPath;
     if (productionCompanies != null) {
-      map['production_companies'] = productionCompanies?.map((v) => v.toJson()).toList();
+      map['production_companies'] =
+          productionCompanies?.map((v) => v.toJson()).toList();
     }
     if (productionCountries != null) {
-      map['production_countries'] = productionCountries?.map((v) => v.toJson()).toList();
+      map['production_countries'] =
+          productionCountries?.map((v) => v.toJson()).toList();
     }
     map['release_date'] = releaseDate;
     map['revenue'] = revenue;
     map['runtime'] = runtime;
     if (spokenLanguages != null) {
-      map['spoken_languages'] = spokenLanguages?.map((v) => v.toJson()).toList();
+      map['spoken_languages'] =
+          spokenLanguages?.map((v) => v.toJson()).toList();
     }
     map['status'] = status;
     map['tagline'] = tagline;
@@ -140,20 +153,21 @@ class MovieDetailsResponse {
     map['vote_count'] = voteCount;
     return map;
   }
-
 }
 
 class SpokenLanguages {
   SpokenLanguages({
     this.englishName,
     this.iso6391,
-    this.name,});
+    this.name,
+  });
 
   SpokenLanguages.fromJson(dynamic json) {
     englishName = json['english_name'];
     iso6391 = json['iso_639_1'];
     name = json['name'];
   }
+
   String? englishName;
   String? iso6391;
   String? name;
@@ -165,18 +179,19 @@ class SpokenLanguages {
     map['name'] = name;
     return map;
   }
-
 }
 
 class ProductionCountries {
   ProductionCountries({
     this.iso31661,
-    this.name,});
+    this.name,
+  });
 
   ProductionCountries.fromJson(dynamic json) {
     iso31661 = json['iso_3166_1'];
     name = json['name'];
   }
+
   String? iso31661;
   String? name;
 
@@ -186,7 +201,6 @@ class ProductionCountries {
     map['name'] = name;
     return map;
   }
-
 }
 
 class ProductionCompanies {
@@ -194,7 +208,8 @@ class ProductionCompanies {
     this.id,
     this.logoPath,
     this.name,
-    this.originCountry,});
+    this.originCountry,
+  });
 
   ProductionCompanies.fromJson(dynamic json) {
     id = json['id'];
@@ -202,6 +217,7 @@ class ProductionCompanies {
     name = json['name'];
     originCountry = json['origin_country'];
   }
+
   int? id;
   String? logoPath;
   String? name;
@@ -215,18 +231,19 @@ class ProductionCompanies {
     map['origin_country'] = originCountry;
     return map;
   }
-
 }
 
 class Genres {
   Genres({
     this.id,
-    this.name,});
+    this.name,
+  });
 
   Genres.fromJson(dynamic json) {
     id = json['id'];
     name = json['name'];
   }
+
   int? id;
   String? name;
 
@@ -236,5 +253,4 @@ class Genres {
     map['name'] = name;
     return map;
   }
-
 }

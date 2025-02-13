@@ -1,8 +1,6 @@
 class CreditsResponse {
-  CreditsResponse({
-    this.id,
-    this.cast,
-    this.crew,});
+  CreditsResponse(
+      {this.id, this.cast, this.crew, this.status_message, this.status_code});
 
   CreditsResponse.fromJson(dynamic json) {
     id = json['id'];
@@ -18,10 +16,16 @@ class CreditsResponse {
         crew?.add(Crew.fromJson(v));
       });
     }
+
+    status_message = json['status_message'];
+    status_code = json['status_code'];
   }
+
   int? id;
   List<Cast>? cast;
   List<Crew>? crew;
+  String? status_code;
+  String? status_message;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -34,7 +38,6 @@ class CreditsResponse {
     }
     return map;
   }
-
 }
 
 class Crew {
@@ -49,7 +52,8 @@ class Crew {
     this.profilePath,
     this.creditId,
     this.department,
-    this.job,});
+    this.job,
+  });
 
   Crew.fromJson(dynamic json) {
     adult = json['adult'];
@@ -64,6 +68,7 @@ class Crew {
     department = json['department'];
     job = json['job'];
   }
+
   bool? adult;
   int? gender;
   int? id;
@@ -91,7 +96,6 @@ class Crew {
     map['job'] = job;
     return map;
   }
-
 }
 
 class Cast {
@@ -107,7 +111,8 @@ class Cast {
     this.castId,
     this.character,
     this.creditId,
-    this.order,});
+    this.order,
+  });
 
   Cast.fromJson(dynamic json) {
     adult = json['adult'];
@@ -123,6 +128,7 @@ class Cast {
     creditId = json['credit_id'];
     order = json['order'];
   }
+
   bool? adult;
   int? gender;
   int? id;
@@ -152,5 +158,4 @@ class Cast {
     map['order'] = order;
     return map;
   }
-
 }
