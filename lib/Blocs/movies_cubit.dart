@@ -16,15 +16,7 @@ class MoviesCubit extends Cubit<MoviesStates> {
   ImagesResponse? imagesResponse;
   CreditsResponse? creditsResponse;
 
-  int selectedIndex = 0;
-
-  changeSelected(int index) async {
-    selectedIndex = index;
-    await getMovieImages();
-    await getMovieCredits();
-    await getMovieDetails();
-    emit(ChangeSelectedSuccess());
-  }
+  int currentTabIndex = 0;
 
   List<Results> sources = [];
 
@@ -38,12 +30,6 @@ class MoviesCubit extends Cubit<MoviesStates> {
         var jsonData = jsonDecode(response.body);
         sourceResponse = SourceResponse.fromJson(jsonData);
         sources = sourceResponse?.results ?? [];
-        if (sources.isNotEmpty) {
-          selectedIndex = 0;
-          await getMovieDetails();
-          await getMovieCredits();
-          await getMovieImages();
-        }
         emit(SourceSuccessStates(data: sources));
       } else {
         emit(FailedToSourceStates(
@@ -54,10 +40,10 @@ class MoviesCubit extends Cubit<MoviesStates> {
     }
   }
 
-  Future<void> getMovieDetails() async {
+  Future<void> getMovieDetailsById(int movieId) async {
     emit(DetailsLoadingStates());
     try {
-      Uri url = Uri.parse("${Constant.BASE_URL}/3/movie/${sources[selectedIndex].id}?api_key=${Constant.API_KEY}");
+      Uri url = Uri.parse("${Constant.BASE_URL}/3/movie/$movieId?api_key=${Constant.API_KEY}");
       http.Response response = await http.get(url);
 
       if (response.statusCode == 200) {
@@ -73,10 +59,10 @@ class MoviesCubit extends Cubit<MoviesStates> {
     }
   }
 
-  Future<void> getMovieImages() async {
+  Future<void> getMovieImagesById(int movieId) async {
     emit(ImagesLoadingStates());
     try {
-      Uri url = Uri.parse("${Constant.BASE_URL}/3/movie/${sources[selectedIndex].id}/images?api_key=${Constant.API_KEY}");
+      Uri url = Uri.parse("${Constant.BASE_URL}/3/movie/$movieId/images?api_key=${Constant.API_KEY}");
       http.Response response = await http.get(url);
 
       if (response.statusCode == 200) {
@@ -92,10 +78,10 @@ class MoviesCubit extends Cubit<MoviesStates> {
     }
   }
 
-  Future<void> getMovieCredits() async {
+  Future<void> getMovieCreditsById(int movieId) async {
     emit(CreditsLoadingStates());
     try {
-      Uri url = Uri.parse("${Constant.BASE_URL}/3/movie/${sources[selectedIndex].id}/credits?api_key=${Constant.API_KEY}");
+      Uri url = Uri.parse("${Constant.BASE_URL}/3/movie/$movieId/credits?api_key=${Constant.API_KEY}");
       http.Response response = await http.get(url);
 
       if (response.statusCode == 200) {
@@ -108,6 +94,20 @@ class MoviesCubit extends Cubit<MoviesStates> {
       }
     } catch (e) {
       emit(FailedToCreditsStates(message: "Exception: $e"));
+    }
+  }
+
+  void onItemSelected(int index, {int? movieId}) {
+    if (index != currentTabIndex) {
+      currentTabIndex = index;
+      emit(ChangeTabSuccess());
+    }
+
+    if (movieId != null) {
+      getMovieDetailsById(movieId);
+      getMovieCreditsById(movieId);
+      getMovieImagesById(movieId);
+      emit(ChangeSelectedSuccess());
     }
   }
 }

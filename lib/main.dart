@@ -28,7 +28,7 @@ void main() async {
       supportedLocales: [Locale('en'), Locale('ar')],
       path: 'assets/translations',
       fallbackLocale: Locale('en'),
-      child: MovieApp(),
+      child: const MovieApp(),
     ),
   ));
 }
@@ -36,24 +36,16 @@ void main() async {
 class MovieApp extends StatelessWidget {
   const MovieApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     var provider = Provider.of<MyProvider>(context);
     BaseLine lightTheme = LightTheme();
     BaseLine darkTheme = DarkTheme();
+
     return MultiBlocProvider(
       providers: [
-        BlocProvider(
-          create: (context) => AuthCubit(),
-        ),
-        BlocProvider(
-          create: (context) => MoviesCubit()
-            ..getMovieCredits()
-            ..getMovieDetails()
-            ..getSources()
-            ..getMovieImages(),
-        ),
+        BlocProvider(create: (context) => AuthCubit()),
+        BlocProvider(create: (context) => MoviesCubit()..getSources()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -65,13 +57,30 @@ class MovieApp extends StatelessWidget {
         locale: context.locale,
         initialRoute: OnboardingScreen.routeName,
         routes: {
-          MovieDetailsScreen.routeName: (context) => MovieDetailsScreen(),
           HomeScreen.routeName: (context) => HomeScreen(),
           OnboardingScreen.routeName: (context) => OnboardingScreen(),
           LoginScreen.routeName: (context) => LoginScreen(),
           RegisterScreen.routeName: (context) => RegisterScreen(),
           ForgetPasswordScreen.routeName: (context) => ForgetPasswordScreen(),
         },
+        onGenerateRoute: (settings) {
+          if (settings.name == MovieDetailsScreen.routeName) {
+            final args = settings.arguments as int?;
+            if (args == null) {
+              return MaterialPageRoute(
+                builder: (context) => Scaffold(
+                  body: Center(child: Text("Error: Movie ID is missing")),
+                ),
+              );
+            }
+            return MaterialPageRoute(
+              builder: (context) => MovieDetailsScreen(),
+              settings: RouteSettings(arguments: args),
+            );
+          }
+          return null;
+        },
+
       ),
     );
   }

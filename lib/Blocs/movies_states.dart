@@ -3,6 +3,8 @@ abstract class MoviesStates {}
 class MoviesInitialStates extends MoviesStates {}
 
 class ChangeSelectedSuccess extends MoviesStates {}
+class ChangeTabSuccess extends MoviesStates {}
+
 
 class SourceLoadingStates extends MoviesStates {}
 

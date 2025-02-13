@@ -39,21 +39,25 @@ class HomeTab extends StatelessWidget {
                     enlargeCenterPage: true,
                     scrollDirection: Axis.horizontal,
                   ),
-                  items: cubit.sourceResponse?.results?.map((movie_id) {
+                  items: cubit.sourceResponse?.results?.map((movie) {
                     return Builder(
                       builder: (BuildContext context) {
                         return GestureDetector(
                           onTap: () {
-                            Navigator.pushNamed(
+                            if (movie.id != null) {
+                              Navigator.pushNamed(
                                   context, MovieDetailsScreen.routeName,
-                                arguments: movie_id);
+                                  arguments: movie.id);
+                            } else {
+                              print("Error: Movie ID is null");
+                            }
                           },
                           child: Stack(
                             children: [
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(20),
                                 child: Image.network(
-                                  "https://image.tmdb.org/t/p/w500${movie_id.posterPath}",
+                                  "https://image.tmdb.org/t/p/w500${movie.posterPath}",
                                   fit: BoxFit.cover,
                                   width: double.infinity,
                                   height: 450,
@@ -75,8 +79,8 @@ class HomeTab extends StatelessWidget {
                                   child: Row(
                                     children: [
                                       Text(
-                                        movie_id.voteAverage
-                                                ?.toStringAsFixed(1) ??
+                                        movie.voteAverage
+                                            ?.toStringAsFixed(1) ??
                                             '0.0',
                                         style: Theme.of(context)
                                             .textTheme
@@ -158,7 +162,7 @@ class HomeTab extends StatelessWidget {
                                   children: [
                                     Text(
                                       cubit.sourceResponse?.results?[index].voteAverage
-                                              ?.toStringAsFixed(1) ??
+                                          ?.toStringAsFixed(1) ??
                                           '0.0',
                                       style: Theme.of(context)
                                           .textTheme
