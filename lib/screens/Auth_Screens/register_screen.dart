@@ -11,16 +11,11 @@ import 'package:toggle_switch/toggle_switch.dart';
 
 import 'login_screen.dart';
 
-class RegisterScreen extends StatefulWidget {
+class RegisterScreen extends StatelessWidget {
   static const String routeName = "Register Screen";
 
   RegisterScreen({super.key});
 
-  @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
-}
-
-class _RegisterScreenState extends State<RegisterScreen> {
   final formKey = GlobalKey<FormState>();
 
   var nameController = TextEditingController();
@@ -32,6 +27,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   var passwordController = TextEditingController();
 
   var rePasswordController = TextEditingController();
+
   int selectedAvaterId = 1;
 
   @override
@@ -89,9 +85,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       items: List.generate(100, (index) {
                         return GestureDetector(
                           onTap: () {
-                            setState(() {
-                              selectedAvaterId = index + 1;
-                            });
+                            selectedAvaterId = index + 1;
                             print("Selected Avatar ID: $selectedAvaterId");
                           },
                           child: AvatarPlus(

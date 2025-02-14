@@ -93,7 +93,7 @@ class SearchTab extends StatelessWidget {
                                       style: Theme.of(context).textTheme.titleSmall,
                                     ),
                                     SizedBox(width: 4),
-                                    Icon(Icons.star, color: Colors.yellow, size: 15),
+                                    Icon(Icons.star, color: Theme.of(context).primaryColor, size: 15),
                                   ],
                                 ),
                               ),

@@ -1,10 +1,11 @@
-import 'dart:convert';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
 import 'package:movie_app/Blocs/auth_states.dart';
 
 class AuthCubit extends Cubit<AuthStates> {
   AuthCubit() : super(AuthInitialStates());
+
+  final dio = Dio();
 
 
   Future<void> register({
@@ -16,23 +17,26 @@ class AuthCubit extends Cubit<AuthStates> {
     required int avaterId,
   }) async {
     emit(RegisterLoadingStates());
+
     try {
-      http.Response response = await http.post(
-        Uri.parse("https://route-movie-apis.vercel.app/auth/register"),
-        body: jsonEncode({
-          "name": name,
-          "email": email,
-          "phone": phone,
-          "password": password,
-          "confirmPassword": confirmPassword,
-          "avaterId": avaterId.toInt()
-        }),
+      Map<String, dynamic> body = {
+        "name": name,
+        "email": email,
+        "phone": phone,
+        "password": password,
+        "confirmPassword": confirmPassword,
+        "avaterId": avaterId
+      };
+
+      var response = await dio.post(
+        "https://route-movie-apis.vercel.app/auth/register",
+        data: body,
       );
-      var responseBody = jsonDecode(response.body);
-      if (responseBody['status'] == 201) {
+
+      if (response.statusCode == 201) {
         emit(RegisterSuccesStates());
       } else {
-        emit(FailedToRegisterStates(message: responseBody['message']));
+        emit(FailedToRegisterStates(message: response.data['message']));
       }
     } catch (e) {
       emit(FailedToRegisterStates(message: e.toString()));
@@ -41,21 +45,21 @@ class AuthCubit extends Cubit<AuthStates> {
 
   Future<void> login({required String email, required String password}) async {
     emit(LoginLoadingStates());
+
     try {
-      http.Response response = await http.post(
-        Uri.parse("https://route-movie-apis.vercel.app/auth/login"),
-        body: jsonEncode({"email": email, "password": password}),
+      var response = await dio.post(
+        "https://route-movie-apis.vercel.app/auth/login",
+        data: {"email": email, "password": password},
+        options: Options(headers: {"Content-Type": "application/json"}),
       );
-      var data = jsonDecode(response.body);
-      if (data['status'] == 200) {
+
+      if (response.statusCode == 200) {
         emit(LoginSuccesStates());
       } else {
-        emit(FailedToLoginStates(message: data['message']));
+        emit(FailedToLoginStates(message: response.data['message']));
       }
     } catch (e) {
       emit(FailedToLoginStates(message: e.toString()));
     }
   }
-
-  
 }

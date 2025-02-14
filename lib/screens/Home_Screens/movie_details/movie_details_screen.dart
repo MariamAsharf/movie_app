@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../Blocs/movies_cubit.dart';
 import '../../../Blocs/movies_states.dart';
-import '../home_screen.dart';
 
 class MovieDetailsScreen extends StatelessWidget {
   static const String routeName = '/movieDetails';
@@ -31,7 +31,7 @@ class MovieDetailsScreen extends StatelessWidget {
     });
 
     return BlocConsumer<MoviesCubit, MoviesStates>(
-      listener: (context, state) {
+      listener: (context, state) async {
         if (state is FailedToDetailsStates) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -41,6 +41,15 @@ class MovieDetailsScreen extends StatelessWidget {
               ),
             ),
           );
+        }
+        if (state is MovieVideoLoadedState) {
+          final Uri url = Uri.parse(state.videoUrl);
+          if (await canLaunchUrl(url)) {
+            await launchUrl(url, mode: LaunchMode.externalApplication);
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text("Could not launch YouTube")));
+          }
         }
       },
       builder: (context, state) {
@@ -59,7 +68,7 @@ class MovieDetailsScreen extends StatelessWidget {
                               alignment: AlignmentDirectional.topCenter,
                               children: [
                                 Image.network(
-                                  "https://image.tmdb.org/t/p/w500${cubit.movieDetailsResponse?.posterPath}",
+                                  "https://image.tmdb.org/t/p/w500${cubit.movieDetailsResponse?.posterPath}" ?? "",
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.only(
@@ -74,7 +83,7 @@ class MovieDetailsScreen extends StatelessWidget {
                                         children: [
                                           GestureDetector(
                                             onTap: () {
-                                              Navigator.pop(context,true);
+                                              Navigator.pop(context, true);
                                             },
                                             child: Icon(
                                               Icons.arrow_back_ios,
@@ -143,7 +152,10 @@ class MovieDetailsScreen extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
                                   ElevatedButton(
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      MoviesCubit.get(context)
+                                          .getMovieVideo(movieId);
+                                    },
                                     style: ButtonStyle(
                                       padding: WidgetStatePropertyAll(
                                         EdgeInsets.symmetric(vertical: 16),
@@ -277,7 +289,8 @@ class MovieDetailsScreen extends StatelessWidget {
                                           borderRadius:
                                               BorderRadius.circular(16),
                                           child: Image.network(
-                                              "https://image.tmdb.org/t/p/w500${cubit.imagesResponse!.backdrops![index].filePath}"),
+                                              "https://image.tmdb.org/t/p/w500${cubit.imagesResponse!.backdrops![index].filePath}" ??
+                                                  ""),
                                         );
                                       },
                                       separatorBuilder: (context, index) =>
@@ -333,7 +346,8 @@ class MovieDetailsScreen extends StatelessWidget {
                                                 borderRadius:
                                                     BorderRadius.circular(16),
                                                 child: Image.network(
-                                                    "https://image.tmdb.org/t/p/w500${cubit.sourceResponse!.results![index].posterPath}"),
+                                                    "https://image.tmdb.org/t/p/w500${cubit.sourceResponse!.results![index].posterPath}" ??
+                                                        ""),
                                               ),
                                               Positioned(
                                                 top: 8,
@@ -423,7 +437,8 @@ class MovieDetailsScreen extends StatelessWidget {
                                                   borderRadius:
                                                       BorderRadius.circular(10),
                                                   child: Image.network(
-                                                    "https://image.tmdb.org/t/p/w500${cubit.creditsResponse!.cast![index].profilePath!}",
+                                                    "https://image.tmdb.org/t/p/w500${cubit.creditsResponse!.cast![index].profilePath!}" ??
+                                                        "",
                                                     fit: BoxFit.fill,
                                                     height: 100,
                                                     width: 100,

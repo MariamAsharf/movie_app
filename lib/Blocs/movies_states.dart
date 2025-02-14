@@ -3,8 +3,8 @@ abstract class MoviesStates {}
 class MoviesInitialStates extends MoviesStates {}
 
 class ChangeSelectedSuccess extends MoviesStates {}
-class ChangeTabSuccess extends MoviesStates {}
 
+class ChangeTabSuccess extends MoviesStates {}
 
 class SourceLoadingStates extends MoviesStates {}
 
@@ -62,5 +62,26 @@ class FailedToCreditsStates extends MoviesStates {
   FailedToCreditsStates({required this.message});
 }
 
-class SearchSuccessStates extends MoviesStates {
+class SearchSuccessStates extends MoviesStates {}
+
+class GenresLoadingStates extends MoviesStates {}
+
+class GenresSuccessStates extends MoviesStates {}
+
+class GenresFailedStates extends MoviesStates {
+  final String message;
+
+  GenresFailedStates({required this.message});
+}
+
+class MovieVideoLoadingState extends MoviesStates {}
+
+class MovieVideoLoadedState extends MoviesStates {
+  final String videoUrl;
+  MovieVideoLoadedState(this.videoUrl);
+}
+
+class MovieVideoErrorState extends MoviesStates {
+  final String error;
+  MovieVideoErrorState(this.error);
 }
