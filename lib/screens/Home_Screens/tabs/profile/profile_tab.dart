@@ -142,7 +142,7 @@ class _ProfileTabState extends State<ProfileTab> {
                                   text: "History",
                                   style: TextStyle(
                                     color: Colors.white,
-                                    fontSize: 16,
+                                    fontSize: 17,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
