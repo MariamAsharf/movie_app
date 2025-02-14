@@ -61,3 +61,6 @@ class FailedToCreditsStates extends MoviesStates {
 
   FailedToCreditsStates({required this.message});
 }
+
+class SearchSuccessStates extends MoviesStates {
+}

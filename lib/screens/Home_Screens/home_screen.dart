@@ -5,7 +5,7 @@ import 'package:movie_app/Blocs/movies_states.dart';
 import 'package:movie_app/screens/Home_Screens/tabs/Home/home_tab.dart';
 import 'package:movie_app/screens/Home_Screens/tabs/explore_tab.dart';
 import 'package:movie_app/screens/Home_Screens/tabs/profile_tab.dart';
-import 'package:movie_app/screens/Home_Screens/tabs/search_tab.dart';
+import 'package:movie_app/screens/Home_Screens/tabs/search/search_tab.dart';
 
 class HomeScreen extends StatelessWidget {
   static const String routeName = "Home Screen";
@@ -46,7 +46,10 @@ class HomeScreen extends StatelessWidget {
           child: Scaffold(
             body: tabs[cubit.currentTabIndex],
             bottomNavigationBar: ClipRRect(
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(16),
+                topRight: Radius.circular(16),
+              ),
               child: BottomNavigationBar(
                 currentIndex: cubit.currentTabIndex,
                 onTap: (index) {

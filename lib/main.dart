@@ -65,8 +65,8 @@ class MovieApp extends StatelessWidget {
         },
         onGenerateRoute: (settings) {
           if (settings.name == MovieDetailsScreen.routeName) {
-            final args = settings.arguments as int?;
-            if (args == null) {
+            final movieId = settings.arguments as int?;
+            if (movieId == null) {
               return MaterialPageRoute(
                 builder: (context) => Scaffold(
                   body: Center(child: Text("Error: Movie ID is missing")),
@@ -74,13 +74,11 @@ class MovieApp extends StatelessWidget {
               );
             }
             return MaterialPageRoute(
-              builder: (context) => MovieDetailsScreen(),
-              settings: RouteSettings(arguments: args),
+              builder: (context) => MovieDetailsScreen(movieId: movieId),
             );
           }
           return null;
         },
-
       ),
     );
   }
