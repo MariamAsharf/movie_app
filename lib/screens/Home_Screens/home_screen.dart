@@ -23,12 +23,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocConsumer<MoviesCubit, MoviesStates>(
       listener: (context, state) {
-        if (state is SourceLoadingStates) {
-          showDialog(
-            context: context,
-            builder: (context) => Center(child: CircularProgressIndicator()),
-          );
-        } else if (state is FailedToSourceStates) {
+         if (state is FailedToSourceStates) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
