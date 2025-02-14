@@ -5,6 +5,8 @@ import 'package:movie_app/Blocs/auth_cupit.dart';
 import 'package:movie_app/Blocs/movies_cubit.dart';
 import 'package:movie_app/My_Theme/dark_theme.dart';
 import 'package:movie_app/My_Theme/theme.dart';
+import 'package:movie_app/Network/local_network.dart';
+import 'package:movie_app/constants/constants.dart';
 import 'package:movie_app/onboarding_screen.dart';
 import 'package:movie_app/screens/Auth_Screens/forget_password_screen.dart';
 import 'package:movie_app/screens/Auth_Screens/login_screen.dart';
@@ -13,6 +15,7 @@ import 'package:movie_app/screens/Home_Screens/home_screen.dart';
 import 'package:movie_app/screens/Home_Screens/movie_details/movie_details_screen.dart';
 //import 'package:movie_app/screens/profile/profile_screen.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'My_Provider/my_provider.dart';
 import 'My_Theme/light_theme.dart';
@@ -22,20 +25,36 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
   Bloc.observer = MyBlocObserver();
+ await CashNetwork.cashIntialization();
+token = CashNetwork.getCashData(key: 'token');
+print("token is ");
 
-  runApp(ChangeNotifierProvider(
-    create: (context) => MyProvider(),
-    child: EasyLocalization(
-      supportedLocales: [Locale('en'), Locale('ar')],
-      path: 'assets/translations',
-      fallbackLocale: Locale('en'),
-      child: const MovieApp(),
+  WidgetsFlutterBinding.ensureInitialized();
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+
+  bool isOnboardingCompleted = prefs.getBool("onboardingCompleted") ?? false;
+  //String? token = prefs.getString("token");
+
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => MyProvider(),
+      child: EasyLocalization(
+        supportedLocales: [Locale('en'), Locale('ar')],
+        path: 'assets/translations',
+        fallbackLocale: Locale('en'),
+        child: MovieApp(
+          isOnboardingCompleted: isOnboardingCompleted,
+          token: token,
+        ),
+      ),
     ),
-  ));
+  );
 }
 
 class MovieApp extends StatelessWidget {
-  const MovieApp({super.key});
+  final bool isOnboardingCompleted;
+  final String? token;
+  const MovieApp({super.key,required this.isOnboardingCompleted, this.token});
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +75,9 @@ class MovieApp extends StatelessWidget {
         localizationsDelegates: context.localizationDelegates,
         supportedLocales: context.supportedLocales,
         locale: context.locale,
-        initialRoute: OnboardingScreen.routeName,
+        initialRoute: isOnboardingCompleted
+            ? (token != null  ? HomeScreen.routeName : LoginScreen.routeName)
+            : OnboardingScreen.routeName,
         routes: {
           HomeScreen.routeName: (context) => HomeScreen(),
           OnboardingScreen.routeName: (context) => OnboardingScreen(),
@@ -87,3 +108,4 @@ class MovieApp extends StatelessWidget {
     );
   }
 }
+

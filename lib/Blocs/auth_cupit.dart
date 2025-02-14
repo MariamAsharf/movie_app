@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 import 'package:movie_app/Blocs/auth_states.dart';
+import 'package:movie_app/Network/local_network.dart';
 
 class AuthCubit extends Cubit<AuthStates> {
   AuthCubit() : super(AuthInitialStates());
@@ -44,10 +45,14 @@ class AuthCubit extends Cubit<AuthStates> {
     try {
       http.Response response = await http.post(
         Uri.parse("https://route-movie-apis.vercel.app/auth/login"),
-        body: jsonEncode({"email": email, "password": password}),
+        body:
+        jsonEncode({"email": email, "password": password}),
       );
       var data = jsonDecode(response.body);
       if (data['status'] == 200) {
+        CashNetwork.insertsToCash(key: "token", value: data["data"]["token"]);
+
+
         emit(LoginSuccesStates());
       } else {
         emit(FailedToLoginStates(message: data['message']));
