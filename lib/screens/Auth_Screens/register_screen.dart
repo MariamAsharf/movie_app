@@ -313,7 +313,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                         ),
                         onPressed: () {
-                          print("Selected Avatar ID: $selectedAvaterId");
+                          print("Selected Avater ID: $selectedAvaterId");
                           if (formKey.currentState!.validate()) {
                             BlocProvider.of<AuthCubit>(context).register(
                                 email: emailController.text,

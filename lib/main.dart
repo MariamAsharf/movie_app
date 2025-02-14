@@ -11,6 +11,7 @@ import 'package:movie_app/screens/Auth_Screens/login_screen.dart';
 import 'package:movie_app/screens/Auth_Screens/register_screen.dart';
 import 'package:movie_app/screens/Home_Screens/home_screen.dart';
 import 'package:movie_app/screens/Home_Screens/movie_details/movie_details_screen.dart';
+//import 'package:movie_app/screens/profile/profile_screen.dart';
 import 'package:provider/provider.dart';
 
 import 'My_Provider/my_provider.dart';
@@ -62,6 +63,7 @@ class MovieApp extends StatelessWidget {
           LoginScreen.routeName: (context) => LoginScreen(),
           RegisterScreen.routeName: (context) => RegisterScreen(),
           ForgetPasswordScreen.routeName: (context) => ForgetPasswordScreen(),
+         // ProfileScreen.routeName: (context) => ProfileScreen(),
         },
         onGenerateRoute: (settings) {
           if (settings.name == MovieDetailsScreen.routeName) {

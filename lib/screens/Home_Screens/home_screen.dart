@@ -4,7 +4,7 @@ import 'package:movie_app/Blocs/movies_cubit.dart';
 import 'package:movie_app/Blocs/movies_states.dart';
 import 'package:movie_app/screens/Home_Screens/tabs/Home/home_tab.dart';
 import 'package:movie_app/screens/Home_Screens/tabs/explore_tab.dart';
-import 'package:movie_app/screens/Home_Screens/tabs/profile_tab.dart';
+import 'package:movie_app/screens/Home_Screens/tabs/profile/profile_tab.dart';
 import 'package:movie_app/screens/Home_Screens/tabs/search_tab.dart';
 
 class HomeScreen extends StatelessWidget {
