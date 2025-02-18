@@ -2,6 +2,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:movie_app/Blocs/auth_states.dart';
 
+import '../Network/local_network.dart';
+
 class AuthCubit extends Cubit<AuthStates> {
   AuthCubit() : super(AuthInitialStates());
 
@@ -53,8 +55,12 @@ class AuthCubit extends Cubit<AuthStates> {
         options: Options(headers: {"Content-Type": "application/json"}),
       );
 
+     // var data = jsonDecode(response.body);
+
       if (response.statusCode == 200) {
         emit(LoginSuccesStates());
+        CashNetwork.insertsToCash(key: "token", value: response.data);
+
       } else {
         emit(FailedToLoginStates(message: response.data['message']));
       }

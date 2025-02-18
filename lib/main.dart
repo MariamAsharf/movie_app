@@ -12,15 +12,25 @@ import 'package:movie_app/screens/Auth_Screens/register_screen.dart';
 import 'package:movie_app/screens/Home_Screens/home_screen.dart';
 import 'package:movie_app/screens/Home_Screens/movie_details/movie_details_screen.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'My_Provider/my_provider.dart';
 import 'My_Theme/light_theme.dart';
+import 'Network/local_network.dart';
 import 'Observer/bloc_observer.dart';
+import 'constants/constants.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
   Bloc.observer = MyBlocObserver();
+  await CashNetwork.cashIntialization();
+  token = CashNetwork.getCashData(key: 'token');
+  print("token is ");
+
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+
+  bool isOnboardingCompleted = prefs.getBool("onboardingCompleted") ?? true;
 
   runApp(ChangeNotifierProvider(
     create: (context) => MyProvider(),
@@ -28,13 +38,18 @@ void main() async {
       supportedLocales: [Locale('en'), Locale('ar')],
       path: 'assets/translations',
       fallbackLocale: Locale('en'),
-      child: const MovieApp(),
+      child: MovieApp(
+        isOnboardingCompleted: isOnboardingCompleted,
+        token: token,
+      ),
     ),
   ));
 }
 
 class MovieApp extends StatelessWidget {
-  const MovieApp({super.key});
+  final bool isOnboardingCompleted;
+  final String? token;
+  const MovieApp({super.key, required this.isOnboardingCompleted, this.token});
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +70,9 @@ class MovieApp extends StatelessWidget {
         localizationsDelegates: context.localizationDelegates,
         supportedLocales: context.supportedLocales,
         locale: context.locale,
-        initialRoute: OnboardingScreen.routeName,
+        initialRoute: isOnboardingCompleted
+            ? (token != null  ? HomeScreen.routeName : LoginScreen.routeName)
+            : OnboardingScreen.routeName,
         routes: {
           HomeScreen.routeName: (context) => HomeScreen(),
           OnboardingScreen.routeName: (context) => OnboardingScreen(),

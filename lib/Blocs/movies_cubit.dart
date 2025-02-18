@@ -173,6 +173,7 @@ class MoviesCubit extends Cubit<MoviesStates> {
       currentTabIndex = index;
       emit(ChangeTabSuccess());
       getSources();
+      //getUserData();
     }
 
     if (movieId != null) {
