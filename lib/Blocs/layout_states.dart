@@ -18,6 +18,10 @@ class LayoutInitialState extends LayoutStates{}
    FailedToGetUserDataState({required this.error});
  }
 
+ class GetFavSuccessState extends LayoutStates{}
+ class FaildToGetFavState extends LayoutStates{}
+
+
 
 
 

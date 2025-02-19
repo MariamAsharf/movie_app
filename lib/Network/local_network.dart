@@ -1,25 +1,22 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-class CashNetwork{
-  static late SharedPreferences sharedPreferences;
-
-
-  static Future cashIntialization()async{
-    sharedPreferences=await SharedPreferences.getInstance();
+class CacheHelper {
+  static Future<void> saveData({required String key, required String value}) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString(key, value);
+    print("✅ Data Saved: $key = $value");
   }
 
-  static Future <bool> insertsToCash({required String key,required String value}) async{
-    return  await sharedPreferences.setString(key, value);
+  static Future<String?> getData({required String key}) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? value = prefs.getString(key);
+    print("🔄 Loaded Data: $key = $value");
+    return value;
   }
 
-
-  static  String getCashData({required String key}){
-    return sharedPreferences.getString(key) ?? "";
-
-  }
-
-
-  static Future<bool> deleteCashItem({required String key})async{
-    return await sharedPreferences.remove(key);
+  static Future<void> clearData({required String key}) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove(key);
+    print("❌ Data Cleared: $key");
   }
 }

@@ -59,7 +59,7 @@ class AuthCubit extends Cubit<AuthStates> {
 
       if (response.statusCode == 200) {
         emit(LoginSuccesStates());
-        CashNetwork.insertsToCash(key: "token", value: response.data);
+       // CashNetwork.insertsToCash(key: "token", value: response.data);
 
       } else {
         emit(FailedToLoginStates(message: response.data['message']));

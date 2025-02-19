@@ -1,9 +1,9 @@
-class UserProfileModel {
-  UserProfileModel({
+class User2Response {
+  User2Response({
       this.message, 
       this.data,});
 
-  UserProfileModel.fromJson(dynamic json) {
+  User2Response.fromJson(dynamic json) {
     message = json['message'];
     data = json['data'] != null ? Data.fromJson(json['data']) : null;
   }
