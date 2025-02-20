@@ -19,6 +19,8 @@ class HomeScreen extends StatelessWidget {
     ProfileTab(),
   ];
 
+
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<MoviesCubit, MoviesStates>(

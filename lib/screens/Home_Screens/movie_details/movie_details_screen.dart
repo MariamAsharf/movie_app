@@ -289,7 +289,7 @@ class MovieDetailsScreen extends StatelessWidget {
                                           borderRadius:
                                               BorderRadius.circular(16),
                                           child: Image.network(
-                                              "https://image.tmdb.org/t/p/w500${cubit.imagesResponse!.backdrops![index].filePath}" ??
+                                              "https://image.tmdb.org/t/p/w500${cubit.imagesResponse!.backdrops![index].filePath}"??
                                                   ""),
                                         );
                                       },
