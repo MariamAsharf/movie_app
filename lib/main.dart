@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movie_app/Blocs/auth_cupit.dart';
+import 'package:movie_app/Blocs/layout_cubit.dart';
 import 'package:movie_app/Blocs/movies_cubit.dart';
 import 'package:movie_app/My_Theme/dark_theme.dart';
 import 'package:movie_app/My_Theme/theme.dart';
@@ -61,6 +62,8 @@ class MovieApp extends StatelessWidget {
       providers: [
         BlocProvider(create: (context) => AuthCubit()),
         BlocProvider(create: (context) => MoviesCubit()..getSources()),
+        BlocProvider(create: (context) => LayoutCubit()..getUserData()),
+
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
