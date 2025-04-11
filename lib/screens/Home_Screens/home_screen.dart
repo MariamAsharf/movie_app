@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movie_app/Blocs/movies_cubit.dart';
 import 'package:movie_app/Blocs/movies_states.dart';
 import 'package:movie_app/screens/Home_Screens/tabs/Home/home_tab.dart';
-import 'package:movie_app/screens/Home_Screens/tabs/explore_tab.dart';
-import 'package:movie_app/screens/Home_Screens/tabs/profile_tab.dart';
+import 'package:movie_app/screens/Home_Screens/tabs/explore/explore_tab.dart';
+import 'package:movie_app/screens/Home_Screens/tabs/profile/profile_tab.dart';
 import 'package:movie_app/screens/Home_Screens/tabs/search/search_tab.dart';
 
 class HomeScreen extends StatelessWidget {

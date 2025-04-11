@@ -23,6 +23,7 @@ class DarkTheme extends BaseLine {
         appBarTheme: AppBarTheme(
           backgroundColor: scaffoldBackgroundColor,
           centerTitle: true,
+          iconTheme: IconThemeData(color: primaryColor),
         ),
         primaryColor: primaryColor,
         focusColor: focusColor,

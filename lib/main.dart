@@ -11,36 +11,62 @@ import 'package:movie_app/screens/Auth_Screens/login_screen.dart';
 import 'package:movie_app/screens/Auth_Screens/register_screen.dart';
 import 'package:movie_app/screens/Home_Screens/home_screen.dart';
 import 'package:movie_app/screens/Home_Screens/movie_details/movie_details_screen.dart';
+import 'package:movie_app/screens/Home_Screens/tabs/profile/edit_profile.dart';
+import 'package:movie_app/shared/network/cache_network.dart';
 import 'package:provider/provider.dart';
 
 import 'My_Provider/my_provider.dart';
 import 'My_Theme/light_theme.dart';
 import 'Observer/bloc_observer.dart';
+import 'constants/constants.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
   Bloc.observer = MyBlocObserver();
-
+  await CacheNetwork.cacheInitialization();
+  final onboardingDone = CacheNetwork.getCacheData(key: 'onboarding_done');
+  token = CacheNetwork.getCacheData(key: 'token');
+  print("token is : $token");
+  print("Onboarding Done: $onboardingDone");
   runApp(ChangeNotifierProvider(
     create: (context) => MyProvider(),
     child: EasyLocalization(
       supportedLocales: [Locale('en'), Locale('ar')],
       path: 'assets/translations',
       fallbackLocale: Locale('en'),
-      child: const MovieApp(),
+      child: MovieApp(
+        token: token,
+        onboardingDone: onboardingDone == "true",
+      ),
     ),
   ));
 }
 
 class MovieApp extends StatelessWidget {
-  const MovieApp({super.key});
+  final String? token;
+  final bool onboardingDone;
+
+  const MovieApp({
+    super.key,
+    required this.token,
+    required this.onboardingDone,
+  });
 
   @override
   Widget build(BuildContext context) {
     var provider = Provider.of<MyProvider>(context);
     BaseLine lightTheme = LightTheme();
     BaseLine darkTheme = DarkTheme();
+
+    String initialRoute;
+    if (!onboardingDone) {
+      initialRoute = OnboardingScreen.routeName;
+    } else if (token != null && token!.isNotEmpty) {
+      initialRoute = HomeScreen.routeName;
+    } else {
+      initialRoute = LoginScreen.routeName;
+    }
 
     return MultiBlocProvider(
       providers: [
@@ -55,8 +81,9 @@ class MovieApp extends StatelessWidget {
         localizationsDelegates: context.localizationDelegates,
         supportedLocales: context.supportedLocales,
         locale: context.locale,
-        initialRoute: OnboardingScreen.routeName,
+        initialRoute: initialRoute,
         routes: {
+          EditProfile.routeName: (context) => EditProfile(),
           HomeScreen.routeName: (context) => HomeScreen(),
           OnboardingScreen.routeName: (context) => OnboardingScreen(),
           LoginScreen.routeName: (context) => LoginScreen(),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class ProfileTab extends StatelessWidget {
-  const ProfileTab({super.key});
+class HistoryContent extends StatelessWidget {
+  const HistoryContent({super.key});
 
   @override
   Widget build(BuildContext context) {
