@@ -1,8 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:movie_app/Blocs/auth_cupit.dart';
-import 'package:movie_app/Blocs/layout_cubit.dart';
 import 'package:movie_app/Blocs/movies_cubit.dart';
 import 'package:movie_app/My_Theme/dark_theme.dart';
 import 'package:movie_app/My_Theme/theme.dart';
@@ -12,27 +12,31 @@ import 'package:movie_app/screens/Auth_Screens/login_screen.dart';
 import 'package:movie_app/screens/Auth_Screens/register_screen.dart';
 import 'package:movie_app/screens/Home_Screens/home_screen.dart';
 import 'package:movie_app/screens/Home_Screens/movie_details/movie_details_screen.dart';
+import 'package:movie_app/screens/Home_Screens/tabs/profile/edit_profile.dart';
+import 'package:movie_app/shared/network/cache_network.dart';
+import 'package:movie_app/shared/network/user_cache_server.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
+import 'Model/movie.dart';
 import 'My_Provider/my_provider.dart';
 import 'My_Theme/light_theme.dart';
-import 'Network/local_network.dart';
 import 'Observer/bloc_observer.dart';
 import 'constants/constants.dart';
 
-void main() async {
+
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
   Bloc.observer = MyBlocObserver();
-  await CashNetwork.cashIntialization();
-  token = CashNetwork.getCashData(key: 'token');
-  print("token is ");
-
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-
-  bool isOnboardingCompleted = prefs.getBool("onboardingCompleted") ?? true;
-
+  await CacheNetwork.cacheInitialization();
+  final onboardingDone = CacheNetwork.getCacheData(key: 'onboarding_done');
+  token = CacheNetwork.getCacheData(key: 'token');
+  print("token is : $token");
+  print("Onboarding Done: $onboardingDone");
+  await Hive.initFlutter();
+  Hive.registerAdapter(MovieAdapter());
+  await Hive.openBox<Movie>('favouritesBox');
+  await UserCacheServer.init();
   runApp(ChangeNotifierProvider(
     create: (context) => MyProvider(),
     child: EasyLocalization(
@@ -40,17 +44,22 @@ void main() async {
       path: 'assets/translations',
       fallbackLocale: Locale('en'),
       child: MovieApp(
-        isOnboardingCompleted: isOnboardingCompleted,
         token: token,
+        onboardingDone: onboardingDone == "true",
       ),
     ),
   ));
 }
 
 class MovieApp extends StatelessWidget {
-  final bool isOnboardingCompleted;
   final String? token;
-  const MovieApp({super.key, required this.isOnboardingCompleted, this.token});
+  final bool onboardingDone;
+
+  const MovieApp({
+    super.key,
+    required this.token,
+    required this.onboardingDone,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -58,12 +67,19 @@ class MovieApp extends StatelessWidget {
     BaseLine lightTheme = LightTheme();
     BaseLine darkTheme = DarkTheme();
 
+    String initialRoute;
+    if (!onboardingDone) {
+      initialRoute = OnboardingScreen.routeName;
+    } else if (token != null && token!.isNotEmpty) {
+      initialRoute = HomeScreen.routeName;
+    } else {
+      initialRoute = LoginScreen.routeName;
+    }
+
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => AuthCubit()),
         BlocProvider(create: (context) => MoviesCubit()..getSources()),
-        BlocProvider(create: (context) => LayoutCubit()..getUserData()),
-
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -73,10 +89,9 @@ class MovieApp extends StatelessWidget {
         localizationsDelegates: context.localizationDelegates,
         supportedLocales: context.supportedLocales,
         locale: context.locale,
-        initialRoute: isOnboardingCompleted
-            ? (token != null  ? HomeScreen.routeName : LoginScreen.routeName)
-            : OnboardingScreen.routeName,
+        initialRoute: initialRoute,
         routes: {
+          EditProfile.routeName: (context) => EditProfile(),
           HomeScreen.routeName: (context) => HomeScreen(),
           OnboardingScreen.routeName: (context) => OnboardingScreen(),
           LoginScreen.routeName: (context) => LoginScreen(),

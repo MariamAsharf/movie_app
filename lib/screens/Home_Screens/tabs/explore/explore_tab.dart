@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movie_app/Blocs/movies_cubit.dart';
 import 'package:movie_app/Blocs/movies_states.dart';
 
-import '../movie_details/movie_details_screen.dart';
+import '../../movie_details/movie_details_screen.dart';
 
 class ExploreTab extends StatelessWidget {
   const ExploreTab({super.key});

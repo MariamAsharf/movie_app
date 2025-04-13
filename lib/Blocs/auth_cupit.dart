@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:movie_app/Blocs/auth_states.dart';
+import 'package:movie_app/shared/network/cache_network.dart';
 
 import '../Network/local_network.dart';
 
@@ -58,14 +59,16 @@ class AuthCubit extends Cubit<AuthStates> {
      // var data = jsonDecode(response.body);
 
       if (response.statusCode == 200) {
+       await CacheNetwork.insertToCache(key: "token", value: response.data['data']);
+        print("Token saved: ${response.data["data"]}");
         emit(LoginSuccesStates());
         CashNetwork.insertsToCash(key: "token", value: response.data);
 
       } else {
-        emit(FailedToLoginStates(message: response.data['message']));
+        emit(FailedToLoginStates(message: "Account Not Exist!, Please Create New Account.."));
       }
     } catch (e) {
-      emit(FailedToLoginStates(message: e.toString()));
+      emit(FailedToLoginStates(message: "Account Not Exist!, Please Create New Account.."));
     }
   }
 }

@@ -27,7 +27,10 @@ class SearchTab extends StatelessWidget {
             decoration: InputDecoration(
               hintText: "Search",
               hintStyle: Theme.of(context).textTheme.titleSmall,
-              prefixIcon: Icon(Icons.search, color: Colors.white),
+              prefixIcon: Icon(
+                Icons.search,
+                color: Colors.white,
+              ),
               filled: true,
               fillColor: Theme.of(context).focusColor,
               border: OutlineInputBorder(
@@ -41,9 +44,12 @@ class SearchTab extends StatelessWidget {
             child: BlocBuilder<MoviesCubit, MoviesStates>(
               builder: (context, state) {
                 if (state is SourceLoadingStates) {
-                  return Center(child: CircularProgressIndicator());
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
                 }
-                if (state is SearchSuccessStates && cubit.searchItem.isNotEmpty) {
+                if (state is SearchSuccessStates &&
+                    cubit.searchItem.isNotEmpty) {
                   return GridView.builder(
                     itemCount: cubit.searchItem.length,
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -56,7 +62,8 @@ class SearchTab extends StatelessWidget {
                       final movie = cubit.searchItem[index];
                       return GestureDetector(
                         onTap: () {
-                          print("🔍 Navigating from SearchTab to MovieDetailsScreen with ID: ${movie.id}");
+                          print(
+                              "🔍 Navigating from SearchTab to MovieDetailsScreen with ID: ${movie.id}");
                           if (movie.id != null) {
                             Navigator.pushNamed(
                               context,
@@ -81,7 +88,8 @@ class SearchTab extends StatelessWidget {
                               top: 8,
                               left: 10,
                               child: Container(
-                                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 4),
                                 decoration: BoxDecoration(
                                   color: Colors.black.withOpacity(0.6),
                                   borderRadius: BorderRadius.circular(10),
@@ -89,11 +97,16 @@ class SearchTab extends StatelessWidget {
                                 child: Row(
                                   children: [
                                     Text(
-                                      movie.voteAverage?.toStringAsFixed(1) ?? '0.0',
-                                      style: Theme.of(context).textTheme.titleSmall,
+                                      movie.voteAverage?.toStringAsFixed(1) ??
+                                          '0.0',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleSmall,
                                     ),
                                     SizedBox(width: 4),
-                                    Icon(Icons.star, color: Theme.of(context).primaryColor, size: 15),
+                                    Icon(Icons.star,
+                                        color: Theme.of(context).primaryColor,
+                                        size: 15),
                                   ],
                                 ),
                               ),
