@@ -1,18 +1,73 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:movie_app/Model/movie.dart';
+import 'package:movie_app/Model/movie_details_response.dart';
+import 'package:movie_app/shared/network/favourites_local_service.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../Blocs/movies_cubit.dart';
 import '../../../Blocs/movies_states.dart';
 
-class MovieDetailsScreen extends StatelessWidget {
-  static const String routeName = "Movie Details";
+class MovieDetailsScreen extends StatefulWidget {
+  static const String routeName = '/movieDetails';
+  final int movieId;
 
-  const MovieDetailsScreen({super.key});
+  MovieDetailsScreen({super.key, required this.movieId});
+
+  @override
+  State<MovieDetailsScreen> createState() => _MovieDetailsScreenState();
+}
+
+class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
+  bool isFavourite = false;
+
+  @override
+  void initState() {
+    super.initState();
+    checkIfFavourite();
+
+    final int movieId = widget.movieId;
+    Future.microtask(() {
+      final cubit = BlocProvider.of<MoviesCubit>(context);
+      cubit.getMovieDetailsById(movieId);
+      cubit.getMovieImagesById(movieId);
+      cubit.getMovieCreditsById(movieId);
+    });
+  }
+
+  void checkIfFavourite() async {
+    final favs = await FavouritesLocalService.getFavourites();
+    setState(() {
+      isFavourite = favs.any((movie) => movie.movieId == widget.movieId);
+    });
+  }
+
+  void toggleFavourite(Movie movie) async {
+    if (isFavourite) {
+      await FavouritesLocalService.removeFromFavouritesById(widget.movieId);
+    } else {
+      await FavouritesLocalService.addToFavourites(movie);
+    }
+
+    setState(() {
+      isFavourite = !isFavourite;
+    });
+  }
+
+  Movie convertToMovie(MovieDetailsResponse response) {
+    return Movie(
+      movieId: response.id.toString(),
+      name: response.title ?? '',
+      rating: response.voteAverage ?? 0.0,
+      imageURL: 'https://image.tmdb.org/t/p/w500${response.posterPath}',
+      year: response.releaseDate?.split('-').first ?? '',
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    final movieId = ModalRoute.of(context)?.settings.arguments as int?;
-    if (movieId == null) {
+    print("🟢 MovieDetailsScreen Loaded with ID: ${widget.movieId}");
+    if (widget.movieId == null) {
       return Scaffold(
         body: Center(
           child: Text("Error: Movie ID is missing"),
@@ -22,14 +77,18 @@ class MovieDetailsScreen extends StatelessWidget {
 
     var cubit = BlocProvider.of<MoviesCubit>(context);
 
-    Future.microtask(() {
-      cubit.getMovieDetailsById(movieId);
-      cubit.getMovieImagesById(movieId);
-      cubit.getMovieCreditsById(movieId);
-    });
-
     return BlocConsumer<MoviesCubit, MoviesStates>(
-      listener: (context, state) {
+      listener: (context, state) async {
+        if (state is DetailsLoadingStates) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                "Loading....",
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
+            ),
+          );
+        }
         if (state is FailedToDetailsStates) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -39,6 +98,22 @@ class MovieDetailsScreen extends StatelessWidget {
               ),
             ),
           );
+        }
+        if (state is MovieVideoLoadedState) {
+          final Uri url = Uri.parse(state.videoUrl);
+          if (await canLaunchUrl(url)) {
+            await launchUrl(url, mode: LaunchMode.externalApplication);
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text("Could not launch YouTube")));
+          }
+        }
+        if (state is DetailsSuccessStates) {
+          final movieDetails = cubit.movieDetailsResponse;
+          if (movieDetails != null) {
+            final movie = convertToMovie(movieDetails);
+            FavouritesLocalService.addToHistory(movie);
+          }
         }
       },
       builder: (context, state) {
@@ -57,7 +132,8 @@ class MovieDetailsScreen extends StatelessWidget {
                               alignment: AlignmentDirectional.topCenter,
                               children: [
                                 Image.network(
-                                  "https://image.tmdb.org/t/p/w500${cubit.movieDetailsResponse?.posterPath}",
+                                  "https://image.tmdb.org/t/p/w500${cubit.movieDetailsResponse?.posterPath}" ??
+                                      "",
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.only(
@@ -72,15 +148,28 @@ class MovieDetailsScreen extends StatelessWidget {
                                         children: [
                                           GestureDetector(
                                             onTap: () {
-                                              Navigator.of(context).pop();
+                                              Navigator.pop(context, true);
                                             },
                                             child: Icon(
                                               Icons.arrow_back_ios,
                                               color: Colors.white,
                                             ),
                                           ),
-                                          Icon(
-                                            Icons.bookmark_rounded,
+                                          IconButton(
+                                            onPressed: () {
+                                              final movieDetails =
+                                                  BlocProvider.of<MoviesCubit>(
+                                                          context)
+                                                      .movieDetailsResponse!;
+                                              final movie =
+                                                  convertToMovie(movieDetails);
+                                              toggleFavourite(movie);
+                                            },
+                                            icon: Icon(
+                                              isFavourite
+                                                  ? Icons.bookmark
+                                                  : Icons.bookmark_border,
+                                            ),
                                             color: Colors.white,
                                           ),
                                         ],
@@ -92,8 +181,6 @@ class MovieDetailsScreen extends StatelessWidget {
                                       ),
                                       SizedBox(height: 62),
                                       Container(
-                                          margin: EdgeInsets.symmetric(
-                                              horizontal: 32),
                                           padding:
                                               EdgeInsets.symmetric(vertical: 8),
                                           decoration: BoxDecoration(
@@ -111,7 +198,7 @@ class MovieDetailsScreen extends StatelessWidget {
                                                     "",
                                                 style: Theme.of(context)
                                                     .textTheme
-                                                    .titleLarge,
+                                                    .titleMedium,
                                                 textAlign: TextAlign.center,
                                               ),
                                               SizedBox(height: 8),
@@ -121,7 +208,10 @@ class MovieDetailsScreen extends StatelessWidget {
                                                     "",
                                                 style: Theme.of(context)
                                                     .textTheme
-                                                    .titleMedium,
+                                                    .titleSmall!
+                                                    .copyWith(
+                                                        color: Theme.of(context)
+                                                            .primaryColor),
                                                 textAlign: TextAlign.center,
                                               ),
                                             ],
@@ -140,7 +230,10 @@ class MovieDetailsScreen extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
                                   ElevatedButton(
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      MoviesCubit.get(context)
+                                          .getMovieVideo(widget.movieId);
+                                    },
                                     style: ButtonStyle(
                                       padding: WidgetStatePropertyAll(
                                         EdgeInsets.symmetric(vertical: 16),
@@ -274,7 +367,8 @@ class MovieDetailsScreen extends StatelessWidget {
                                           borderRadius:
                                               BorderRadius.circular(16),
                                           child: Image.network(
-                                              "https://image.tmdb.org/t/p/w500${cubit.imagesResponse!.backdrops![index].filePath}"),
+                                              "https://image.tmdb.org/t/p/w500${cubit.imagesResponse!.backdrops![index].filePath}"??
+                                                  ""),
                                         );
                                       },
                                       separatorBuilder: (context, index) =>
@@ -303,51 +397,76 @@ class MovieDetailsScreen extends StatelessWidget {
                                         childAspectRatio: 0.7,
                                       ),
                                       itemBuilder: (context, index) {
-                                        return Stack(
-                                          alignment: Alignment.topLeft,
-                                          children: [
-                                            ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(16),
-                                              child: Image.network(
-                                                  "https://image.tmdb.org/t/p/w500${cubit.sourceResponse!.results![index].posterPath}"),
-                                            ),
-                                            Positioned(
-                                              top: 8,
-                                              left: 10,
-                                              child: Container(
-                                                padding: EdgeInsets.symmetric(
-                                                    horizontal: 8, vertical: 4),
-                                                alignment: Alignment.center,
-                                                decoration: BoxDecoration(
-                                                  color: Theme.of(context)
-                                                      .scaffoldBackgroundColor
-                                                      .withAlpha(165),
-                                                  borderRadius:
-                                                      BorderRadius.circular(10),
-                                                ),
-                                                child: Row(
-                                                  children: [
-                                                    Text(
-                                                      cubit.movieDetailsResponse!
-                                                              .voteAverage!
-                                                              .toStringAsFixed(
-                                                                  1) ??
-                                                          '0.0',
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .titleSmall,
-                                                    ),
-                                                    SizedBox(width: 4),
-                                                    Icon(Icons.star,
-                                                        color: Theme.of(context)
-                                                            .primaryColor,
-                                                        size: 15),
-                                                  ],
+                                        return GestureDetector(
+                                          onTap: () {
+                                            final selectedMovieId = cubit
+                                                .sourceResponse!
+                                                .results![index]
+                                                .id;
+                                            print(
+                                                "🚀 Navigating to MovieDetailsScreen with ID: $selectedMovieId");
+
+                                            if (selectedMovieId != null) {
+                                              Navigator.pushReplacementNamed(
+                                                context,
+                                                MovieDetailsScreen.routeName,
+                                                arguments: selectedMovieId,
+                                              );
+                                            } else {
+                                              print(
+                                                  "⚠️ Error: Selected Movie ID is null");
+                                            }
+                                          },
+                                          child: Stack(
+                                            alignment: Alignment.topLeft,
+                                            children: [
+                                              ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(16),
+                                                child: Image.network(
+                                                    "https://image.tmdb.org/t/p/w500${cubit.sourceResponse!.results![index].posterPath}" ??
+                                                        ""),
+                                              ),
+                                              Positioned(
+                                                top: 8,
+                                                left: 10,
+                                                child: Container(
+                                                  padding: EdgeInsets.symmetric(
+                                                      horizontal: 8,
+                                                      vertical: 4),
+                                                  alignment: Alignment.center,
+                                                  decoration: BoxDecoration(
+                                                    color: Theme.of(context)
+                                                        .scaffoldBackgroundColor
+                                                        .withAlpha(165),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10),
+                                                  ),
+                                                  child: Row(
+                                                    children: [
+                                                      Text(
+                                                        cubit.movieDetailsResponse!
+                                                                .voteAverage!
+                                                                .toStringAsFixed(
+                                                                    1) ??
+                                                            '0.0',
+                                                        style: Theme.of(context)
+                                                            .textTheme
+                                                            .titleSmall,
+                                                      ),
+                                                      SizedBox(width: 4),
+                                                      Icon(Icons.star,
+                                                          color:
+                                                              Theme.of(context)
+                                                                  .primaryColor,
+                                                          size: 15),
+                                                    ],
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                          ],
+                                            ],
+                                          ),
                                         );
                                       },
                                     ),
@@ -385,10 +504,9 @@ class MovieDetailsScreen extends StatelessWidget {
                                                 BorderRadius.circular(16),
                                           ),
                                           child: Row(
+                                            mainAxisSize: MainAxisSize.min,
                                             children: [
                                               Container(
-                                                height: 70,
-                                                width: 70,
                                                 decoration: BoxDecoration(
                                                   borderRadius:
                                                       BorderRadius.circular(10),
@@ -397,35 +515,46 @@ class MovieDetailsScreen extends StatelessWidget {
                                                   borderRadius:
                                                       BorderRadius.circular(10),
                                                   child: Image.network(
-                                                    "https://image.tmdb.org/t/p/w500${cubit.creditsResponse!.cast![index].profilePath!}",
+                                                    "https://image.tmdb.org/t/p/w500${cubit.creditsResponse!.cast![index].profilePath!}" ??
+                                                        "",
                                                     fit: BoxFit.fill,
+                                                    height: 100,
+                                                    width: 100,
                                                   ),
                                                 ),
                                               ),
-                                              SizedBox(width: 10),
-                                              Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    "Name: ${cubit.creditsResponse!.cast![index].name! ?? ""}",
-                                                    style: Theme.of(context)
-                                                        .textTheme
-                                                        .titleSmall,
-                                                    textAlign: TextAlign.start,
-                                                  ),
-                                                  SizedBox(height: 11),
-                                                  Text(
-                                                    "Character:\n   ${cubit.creditsResponse!.cast![index].character! ?? ""}",
-                                                    style: Theme.of(context)
-                                                        .textTheme
-                                                        .titleSmall,
-                                                    textAlign: TextAlign.start,
-
-                                                  ),
-                                                ],
+                                              SizedBox(width: 16),
+                                              Expanded(
+                                                child: Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                        "Name: ${cubit.creditsResponse!.cast![index].name ?? ""}",
+                                                        style: Theme.of(context)
+                                                            .textTheme
+                                                            .titleSmall,
+                                                        textAlign:
+                                                            TextAlign.start,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        maxLines: 2),
+                                                    SizedBox(height: 11),
+                                                    Text(
+                                                      "Character: ${cubit.creditsResponse!.cast![index].character ?? ""}",
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .titleSmall,
+                                                      textAlign:
+                                                          TextAlign.start,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                      maxLines: 2,
+                                                    ),
+                                                  ],
+                                                ),
                                               )
                                             ],
                                           ),
@@ -485,9 +614,7 @@ class MovieDetailsScreen extends StatelessWidget {
                           ],
                         ),
                       )
-                    : Center(
-                        child: CircularProgressIndicator()
-                      ),
+                    : Center(child: CircularProgressIndicator()),
           ),
         );
       },

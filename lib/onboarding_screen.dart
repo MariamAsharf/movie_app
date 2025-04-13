@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movie_app/screens/Auth_Screens/login_screen.dart';
+import 'package:movie_app/shared/network/cache_network.dart';
 
 class OnboardingScreen extends StatefulWidget {
   static const String routeName = "Onboarding Screen";
@@ -174,12 +175,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         ),
                       if (currentIndex > 1) ...[
                         ElevatedButton(
-                          onPressed: () {
+                          onPressed: () async {
                             if (currentIndex < onboardingData.length - 1) {
                               setState(() {
                                 currentIndex++;
                               });
                             } else {
+                              await CacheNetwork.insertToCache(
+                                  key: "onboarding_done", value: "true");
+
                               Navigator.pushReplacementNamed(
                                   context, LoginScreen.routeName);
                             }
