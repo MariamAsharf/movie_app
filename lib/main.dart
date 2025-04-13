@@ -14,6 +14,7 @@ import 'package:movie_app/screens/Home_Screens/home_screen.dart';
 import 'package:movie_app/screens/Home_Screens/movie_details/movie_details_screen.dart';
 import 'package:movie_app/screens/Home_Screens/tabs/profile/edit_profile.dart';
 import 'package:movie_app/shared/network/cache_network.dart';
+import 'package:movie_app/shared/network/user_cache_server.dart';
 import 'package:provider/provider.dart';
 
 import 'Model/movie.dart';
@@ -35,6 +36,7 @@ Future<void> main() async {
   await Hive.initFlutter();
   Hive.registerAdapter(MovieAdapter());
   await Hive.openBox<Movie>('favouritesBox');
+  await UserCacheServer.init();
   runApp(ChangeNotifierProvider(
     create: (context) => MyProvider(),
     child: EasyLocalization(

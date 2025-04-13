@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movie_app/Blocs/movies_cubit.dart';
 import 'package:movie_app/Blocs/movies_states.dart';
+import 'package:movie_app/shared/network/cache_network.dart';
 
 class BottomSheetAvatar extends StatefulWidget {
   const BottomSheetAvatar({super.key});
@@ -39,6 +40,8 @@ class _BottomSheetAvatarState extends State<BottomSheetAvatar> {
 
                 await cubit.updateAvatarId(index + 1);
                 await cubit.getUserData();
+                await CacheNetwork.insertToCache(key: 'avaterId', value: "${index + 1}");
+
 
                 if (mounted) {
                   setState(() {
@@ -51,6 +54,7 @@ class _BottomSheetAvatarState extends State<BottomSheetAvatar> {
                       duration: Duration(seconds: 2),
                     ),
                   );
+                  Navigator.pop(context,true);
                 }
               },
               child: BlocBuilder<MoviesCubit, MoviesStates>(

@@ -16,6 +16,10 @@ class EditProfile extends StatelessWidget {
   Widget build(BuildContext context) {
     final cubit = BlocProvider.of<MoviesCubit>(context);
 
+    String avaterIdFromCache = CacheNetwork.getCacheData(key: 'avaterId') ?? "";
+    String avaterIdToDisplay = avaterIdFromCache.isNotEmpty
+        ? avaterIdFromCache
+        : (cubit.userModel?.data?.avaterId?.toString() ?? "0");
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -31,7 +35,6 @@ class EditProfile extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            SizedBox(height: 36),
             GestureDetector(
               onTap: () {
                 showModalBottomSheet(
@@ -46,9 +49,7 @@ class EditProfile extends StatelessWidget {
                     context: context);
               },
               child: CircleAvatar(
-                child: AvatarPlus(
-                  "${cubit.userModel?.data?.avaterId ?? cubit.selectedAvaterId}",
-                ),
+                child: AvatarPlus(avaterIdToDisplay),
                 radius: 60,
               ),
             ),
@@ -167,9 +168,14 @@ class EditProfile extends StatelessWidget {
                 return ElevatedButton(
                   onPressed: () {
                     final email = cubit.userModel?.data?.email;
-                    final avaterId = cubit.userModel?.data?.avaterId;
-                    if (email!.isNotEmpty && avaterId != null) {
-                      cubit.updateUserData(email: email, avaterId: avaterId);
+                    final cachedAvaterId =
+                        CacheNetwork.getCacheData(key: 'avaterId');
+
+                    if (email != null &&
+                        cachedAvaterId != null &&
+                        cachedAvaterId.isNotEmpty) {
+                      cubit.updateUserData(
+                          email: email, avaterId: int.parse(cachedAvaterId));
                     }
                   },
                   style: ButtonStyle(

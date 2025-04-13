@@ -16,7 +16,9 @@ class ProfileWidget extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: Theme.of(context).focusColor,
+        color: Theme
+            .of(context)
+            .focusColor,
       ),
       child: Padding(
         padding: const EdgeInsets.only(top: 32, right: 16, left: 16),
@@ -30,9 +32,17 @@ class ProfileWidget extends StatelessWidget {
                     BlocBuilder<MoviesCubit, MoviesStates>(
                       builder: (context, state) {
                         if (state is UserSuccessStates) {
+                          String avaterIdFromCache = CacheNetwork.getCacheData(
+                              key: 'avaterId') ?? '';
+                          String avaterIdToDisplay = avaterIdFromCache
+                              .isNotEmpty
+                              ? avaterIdFromCache
+                              : (cubit.userModel?.data?.avaterId?.toString() ??
+                              "0");
+
                           return CircleAvatar(
                             child: AvatarPlus(
-                              "${cubit.userModel?.data?.avaterId ?? 0}",
+                              avaterIdToDisplay,
                               fit: BoxFit.fill,
                             ),
                             radius: 60,
@@ -44,7 +54,10 @@ class ProfileWidget extends StatelessWidget {
                     SizedBox(height: 16),
                     Text(
                       "${cubit.userModel?.data?.name ?? "No Name"}",
-                      style: Theme.of(context).textTheme.titleMedium,
+                      style: Theme
+                          .of(context)
+                          .textTheme
+                          .titleMedium,
                     ),
                   ],
                 ),
@@ -52,7 +65,8 @@ class ProfileWidget extends StatelessWidget {
                   children: [
                     Text(
                       "12",
-                      style: Theme.of(context)
+                      style: Theme
+                          .of(context)
                           .textTheme
                           .titleLarge
                           ?.copyWith(fontSize: 30),
@@ -60,7 +74,10 @@ class ProfileWidget extends StatelessWidget {
                     SizedBox(height: 20),
                     Text(
                       "Watch List",
-                      style: Theme.of(context).textTheme.titleMedium,
+                      style: Theme
+                          .of(context)
+                          .textTheme
+                          .titleMedium,
                     ),
                   ],
                 ),
@@ -68,7 +85,8 @@ class ProfileWidget extends StatelessWidget {
                   children: [
                     Text(
                       "13",
-                      style: Theme.of(context)
+                      style: Theme
+                          .of(context)
                           .textTheme
                           .titleLarge
                           ?.copyWith(fontSize: 30),
@@ -76,7 +94,10 @@ class ProfileWidget extends StatelessWidget {
                     SizedBox(height: 20),
                     Text(
                       "History",
-                      style: Theme.of(context).textTheme.titleMedium,
+                      style: Theme
+                          .of(context)
+                          .textTheme
+                          .titleMedium,
                     ),
                   ],
                 ),
@@ -108,8 +129,14 @@ class ProfileWidget extends StatelessWidget {
                   ),
                   child: Text(
                     "Edit Profile",
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: Theme.of(context).scaffoldBackgroundColor,
+                    style: Theme
+                        .of(context)
+                        .textTheme
+                        .titleMedium
+                        ?.copyWith(
+                      color: Theme
+                          .of(context)
+                          .scaffoldBackgroundColor,
                       fontWeight: FontWeight.w400,
                     ),
                   ),
@@ -149,7 +176,11 @@ class ProfileWidget extends StatelessWidget {
                       Text(
                         "Exit",
                         style:
-                        Theme.of(context).textTheme.titleMedium?.copyWith(
+                        Theme
+                            .of(context)
+                            .textTheme
+                            .titleMedium
+                            ?.copyWith(
                           fontWeight: FontWeight.w400,
                         ),
                       ),

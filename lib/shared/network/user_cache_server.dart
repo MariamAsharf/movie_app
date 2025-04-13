@@ -7,8 +7,8 @@ class UserCacheServer {
     _avatarBox = await Hive.openBox('avatar_cache');
   }
 
-  static Future<void> saveAvatar(String token, String avatarUrl) async {
-    await _avatarBox.put('avatar_$token', avatarUrl);
+  static Future<void> saveAvatar(String token, int avaterId) async {
+    await _avatarBox.put('avatar_$token', avaterId);
   }
 
   static String? getAvatar(String token) {

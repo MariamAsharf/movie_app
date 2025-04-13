@@ -14,6 +14,7 @@ import 'package:movie_app/Model/user_model.dart';
 import 'package:movie_app/constants/constants.dart';
 import 'package:movie_app/screens/Auth_Screens/login_screen.dart';
 import 'package:movie_app/shared/network/cache_network.dart';
+import 'package:movie_app/shared/network/user_cache_server.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MoviesCubit extends Cubit<MoviesStates> {
@@ -217,82 +218,94 @@ class MoviesCubit extends Cubit<MoviesStates> {
 
   Future<void> getUserData() async {
     emit(UserLoadingStates());
+
     try {
-      token = await CacheNetwork.getCacheData(key: "token");
+      token = CacheNetwork.getCacheData(key: "token");
       debugPrint("Token used: $token");
-      if (token == null) {
-        emit(FailedToUserStates(message: "Token is null"));
-        return;
-      }
+
+
       http.Response response = await http.get(
         Uri.parse("https://route-movie-apis.vercel.app/profile"),
         headers: {'Authorization': 'Bearer $token'},
       );
+
       if (response.statusCode == 200) {
         var jsonData = jsonDecode(response.body);
         userModel = UserModel.fromJson(jsonData);
-        emit(
-          UserSuccessStates(data: response.body),
-        );
+
+        if (userModel?.data?.avaterId != null) {
+          await UserCacheServer.saveAvatar(token!, userModel!.data!.avaterId!);
+        }
+
+        emit(UserSuccessStates(data: response.body));
         debugPrint("response is : ${response.body}");
       } else {
-        emit(
-          FailedToUserStates(message: "Failed To Load User Data"),
-        );
+        emit(FailedToUserStates(message: "Failed To Load User Data"));
         debugPrint("response is : ${response.body}");
       }
     } catch (e) {
-      emit(FailedToUserStates(message: "Exeption: $e"));
+      emit(FailedToUserStates(message: "Exception: $e"));
     }
   }
-
-  Future<void> updateUserData(
-      {required String email, required int avaterId}) async {
+  Future<void> updateUserData({
+    required String email,
+    required int avaterId,
+  }) async {
     emit(UpdateUserLoadingStates());
     try {
       http.Response response = await http.patch(
         Uri.parse("https://route-movie-apis.vercel.app/profile"),
         headers: {'Authorization': 'Bearer $token'},
-        body: jsonEncode(
-          {"email": email, "avaterId": avaterId},
-        ),
+        body: jsonEncode({"email": email, "avaterId": avaterId}),
       );
+
       var jsonData = jsonDecode(response.body);
       print("Sending update with avaterId: $avaterId");
-      print("Email: ${email}");
-      print("Avatar ID: ${avaterId}");
 
       if (response.statusCode == 200) {
         await getUserData();
-        debugPrint("Avater ID after update: ${userModel?.data?.avaterId}");
-        userModel = UserModel.fromJson(jsonData);
+
+        if (token != null) {
+          await UserCacheServer.saveAvatar(token!, avaterId);
+        }
+
         selectedAvaterId = avaterId;
-        print('Updated User Data: ${userModel?.toJson()}');
+        userModel = UserModel.fromJson(jsonData);
+
         emit(UserSuccessStates(data: userModel));
-        emit(
-          UpdateUserSuccessStates(data: response.body),
-        );
-        debugPrint("response is : ${response.body}");
+        emit(UpdateUserSuccessStates(data: response.body));
       } else {
-        emit(
-          FailedToUpdateUserStates(message: "Failed To Load User Data"),
-        );
-        debugPrint("response is : ${response.body}");
+        emit(FailedToUpdateUserStates(message: "Failed To Load User Data"));
       }
     } catch (e) {
       emit(FailedToUpdateUserStates(message: "Exeption: ${e.toString()}"));
     }
   }
 
+
   Future<void> updateAvatarId(int avaterId) async {
     final email = userModel?.data?.email;
+
     if (email != null) {
-      await updateUserData(email: email, avaterId: selectedAvaterId);
       selectedAvaterId = avaterId;
-      userModel?.data?.avaterId = selectedAvaterId;
+
+      await updateUserData(email: email, avaterId: avaterId);
+
+      userModel?.data?.avaterId = avaterId;
+
       emit(AvatarUpdatedState(avaterId: avaterId));
     } else {
       emit(FailedToUpdateUserStates(message: "Email is null"));
+    }
+  }
+
+  void loadAvatarFromCache() async {
+    if (token != null) {
+      final cachedAvatar = UserCacheServer.getAvatar(token!);
+      if (cachedAvatar != null) {
+        selectedAvaterId = int.tryParse(cachedAvatar) ?? 1;
+        emit(AvatarUpdatedState(avaterId: selectedAvaterId));
+      }
     }
   }
 
