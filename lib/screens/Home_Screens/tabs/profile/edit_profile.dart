@@ -31,55 +31,28 @@ class EditProfile extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            BlocBuilder<MoviesCubit, MoviesStates>(
-              builder: (context, state) {
-                if (state is AvatarUpdatedState) {
-                  return GestureDetector(
-                    onTap: () {
-                      showModalBottomSheet(
-                        backgroundColor: Theme.of(context).focusColor,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(24),
-                        ),
-                        builder: (context) {
-                          return BottomSheetAvatar();
-                        },
-                        isScrollControlled: true,
-                        context: context,
-                      );
-                    },
-                    child: CircleAvatar(
-                      child: AvatarPlus(
-                        "${cubit.userModel?.data?.avaterId ?? 0}",
-                      ),
-                      radius: 60,
-                    ),
-                  );
-                }
-                return GestureDetector(
-                  onTap: () {
-                    showModalBottomSheet(
-                      backgroundColor: Theme.of(context).focusColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(24),
-                      ),
-                      builder: (context) {
-                        return BottomSheetAvatar();
-                      },
-                      isScrollControlled: true,
-                      context: context,
-                    );
-                  },
-                  child: CircleAvatar(
-                    child: AvatarPlus(
-                      "${cubit.selectedAvaterId ?? 0}",
-                    ),
-                    radius: 60,
-                  ),
-                );
-              },
-            ),
             SizedBox(height: 36),
+            GestureDetector(
+              onTap: () {
+                showModalBottomSheet(
+                    backgroundColor: Theme.of(context).focusColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                    builder: (context) {
+                      return BottomSheetAvatar();
+                    },
+                    isScrollControlled: true,
+                    context: context);
+              },
+              child: CircleAvatar(
+                child: AvatarPlus(
+                  "${cubit.userModel?.data?.avaterId ?? cubit.selectedAvaterId}",
+                ),
+                radius: 60,
+              ),
+            ),
+            SizedBox(height: 16),
             Container(
               padding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
               decoration: BoxDecoration(
@@ -143,7 +116,9 @@ class EditProfile extends StatelessWidget {
                   await CacheNetwork.deleteCacheMovie(key: 'token');
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("Token is not available")),
+                    SnackBar(
+                      content: Text("Token is not available"),
+                    ),
                   );
                 }
               },
@@ -166,33 +141,61 @@ class EditProfile extends StatelessWidget {
               ),
             ),
             SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                String email = cubit.userModel?.data?.email ?? "";
-                int avaterId = cubit.selectedAvaterId;
-                cubit.updateUserData(email: email, avaterId: avaterId);
-                Navigator.pop(context, true);
-              },
-              style: ButtonStyle(
-                padding: WidgetStatePropertyAll(
-                  EdgeInsets.symmetric(horizontal: 48, vertical: 15),
-                ),
-                shape: WidgetStatePropertyAll(
-                  RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                ),
-                backgroundColor: WidgetStatePropertyAll(
-                  Color(0xFFF6BD00),
-                ),
-              ),
-              child: Text(
-                "Update Data",
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: Theme.of(context).scaffoldBackgroundColor,
-                      fontWeight: FontWeight.w400,
+            BlocConsumer<MoviesCubit, MoviesStates>(
+              listener: (context, state) {
+                if (state is UpdateUserSuccessStates) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text("Data Updated Successfully.."),
+                      backgroundColor: Colors.green,
                     ),
-              ),
+                  );
+                  Future.delayed(Duration(milliseconds: 500), () {
+                    Navigator.pop(context, true);
+                  });
+                }
+                if (state is FailedToUpdateUserStates) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(state.message),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+              },
+              builder: (context, state) {
+                return ElevatedButton(
+                  onPressed: () {
+                    final email = cubit.userModel?.data?.email;
+                    final avaterId = cubit.userModel?.data?.avaterId;
+                    if (email!.isNotEmpty && avaterId != null) {
+                      cubit.updateUserData(email: email, avaterId: avaterId);
+                    }
+                  },
+                  style: ButtonStyle(
+                    padding: WidgetStatePropertyAll(
+                      EdgeInsets.symmetric(horizontal: 48, vertical: 15),
+                    ),
+                    shape: WidgetStatePropertyAll(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                    ),
+                    backgroundColor: WidgetStatePropertyAll(
+                      Color(0xFFF6BD00),
+                    ),
+                  ),
+                  child: Text(
+                    state is UpdateUserLoadingStates
+                        ? "Loading..."
+                        : "Update Data",
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: Theme.of(context).scaffoldBackgroundColor,
+                          fontWeight: FontWeight.w400,
+                        ),
+                  ),
+                );
+              },
             ),
             SizedBox(height: 32),
           ],

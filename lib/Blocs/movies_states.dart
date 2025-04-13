@@ -128,5 +128,16 @@ class DeleteAccountSuccessState extends MoviesStates {}
 
 class DeleteAccountFailureState extends MoviesStates {
   final String message;
+
   DeleteAccountFailureState({required this.message});
+}
+
+class FavouriteLoadingStates extends MoviesStates {}
+
+class FavouriteSuccessState extends MoviesStates {}
+
+class FavouriteFailureState extends MoviesStates {
+  final String message;
+
+  FavouriteFailureState({required this.message});
 }

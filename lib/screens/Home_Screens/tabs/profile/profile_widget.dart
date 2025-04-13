@@ -29,11 +29,10 @@ class ProfileWidget extends StatelessWidget {
                   children: [
                     BlocBuilder<MoviesCubit, MoviesStates>(
                       builder: (context, state) {
-                        if (state is UserAvatarUpdatedState ||
-                            state is UserSuccessStates) {
+                        if (state is UserSuccessStates) {
                           return CircleAvatar(
                             child: AvatarPlus(
-                              "${cubit.userModel?.data?.avaterId ?? cubit.selectedAvaterId}",
+                              "${cubit.userModel?.data?.avaterId ?? 0}",
                               fit: BoxFit.fill,
                             ),
                             radius: 60,
@@ -95,24 +94,24 @@ class ProfileWidget extends StatelessWidget {
                     );
                   },
                   style: ButtonStyle(
-                    padding: MaterialStateProperty.all(
+                    padding: WidgetStateProperty.all(
                       EdgeInsets.symmetric(horizontal: 48, vertical: 15),
                     ),
-                    shape: MaterialStateProperty.all(
+                    shape: WidgetStateProperty.all(
                       RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15),
                       ),
                     ),
-                    backgroundColor: MaterialStateProperty.all(
+                    backgroundColor: WidgetStateProperty.all(
                       Color(0xFFF6BD00),
                     ),
                   ),
                   child: Text(
                     "Edit Profile",
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: Theme.of(context).scaffoldBackgroundColor,
-                          fontWeight: FontWeight.w400,
-                        ),
+                      color: Theme.of(context).scaffoldBackgroundColor,
+                      fontWeight: FontWeight.w400,
+                    ),
                   ),
                 ),
                 ElevatedButton(
@@ -129,7 +128,7 @@ class ProfileWidget extends StatelessWidget {
                     Navigator.pushNamedAndRemoveUntil(
                       context,
                       LoginScreen.routeName,
-                      (route) => false,
+                          (route) => false,
                     );
                   },
                   style: ButtonStyle(
@@ -150,9 +149,9 @@ class ProfileWidget extends StatelessWidget {
                       Text(
                         "Exit",
                         style:
-                            Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.w400,
-                                ),
+                        Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w400,
+                        ),
                       ),
                       SizedBox(width: 10),
                       Icon(

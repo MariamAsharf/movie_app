@@ -38,21 +38,19 @@ class _BottomSheetAvatarState extends State<BottomSheetAvatar> {
                 });
 
                 await cubit.updateAvatarId(index + 1);
+                await cubit.getUserData();
 
                 if (mounted) {
                   setState(() {
                     loadingAvatarId = null;
                   });
-                  await cubit.getUserData();
 
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text("Avatar updated successfully!"),
+                    SnackBar(
+                      content: Text("Selected Avatar: ${index + 1}"),
                       duration: Duration(seconds: 2),
                     ),
-
                   );
-                  Navigator.pop(context,true);
                 }
               },
               child: BlocBuilder<MoviesCubit, MoviesStates>(

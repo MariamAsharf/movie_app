@@ -2,18 +2,19 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
 import 'package:movie_app/Blocs/movies_states.dart';
 import 'package:movie_app/Model/credits_response.dart';
 import 'package:movie_app/Model/images_response.dart';
+import 'package:movie_app/Model/movie.dart';
 import 'package:movie_app/Model/movie_details_response.dart';
 import 'package:movie_app/Model/source_response.dart';
 import 'package:movie_app/Model/user_model.dart';
+import 'package:movie_app/constants/constants.dart';
 import 'package:movie_app/screens/Auth_Screens/login_screen.dart';
 import 'package:movie_app/shared/network/cache_network.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-import '../constants/constants.dart';
 
 class MoviesCubit extends Cubit<MoviesStates> {
   MoviesCubit() : super(MoviesInitialStates());
@@ -257,11 +258,16 @@ class MoviesCubit extends Cubit<MoviesStates> {
         ),
       );
       var jsonData = jsonDecode(response.body);
+      print("Sending update with avaterId: $avaterId");
+      print("Email: ${email}");
+      print("Avatar ID: ${avaterId}");
 
       if (response.statusCode == 200) {
         await getUserData();
+        debugPrint("Avater ID after update: ${userModel?.data?.avaterId}");
         userModel = UserModel.fromJson(jsonData);
         selectedAvaterId = avaterId;
+        print('Updated User Data: ${userModel?.toJson()}');
         emit(UserSuccessStates(data: userModel));
         emit(
           UpdateUserSuccessStates(data: response.body),
@@ -281,9 +287,9 @@ class MoviesCubit extends Cubit<MoviesStates> {
   Future<void> updateAvatarId(int avaterId) async {
     final email = userModel?.data?.email;
     if (email != null) {
-      await updateUserData(email: email, avaterId: avaterId);
+      await updateUserData(email: email, avaterId: selectedAvaterId);
       selectedAvaterId = avaterId;
-      userModel?.data?.avaterId = avaterId;
+      userModel?.data?.avaterId = selectedAvaterId;
       emit(AvatarUpdatedState(avaterId: avaterId));
     } else {
       emit(FailedToUpdateUserStates(message: "Email is null"));
@@ -322,4 +328,5 @@ class MoviesCubit extends Cubit<MoviesStates> {
       );
     }
   }
+
 }

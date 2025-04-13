@@ -1,20 +1,73 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:movie_app/Model/movie.dart';
+import 'package:movie_app/Model/movie_details_response.dart';
+import 'package:movie_app/shared/network/favourites_local_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../Blocs/movies_cubit.dart';
 import '../../../Blocs/movies_states.dart';
 
-class MovieDetailsScreen extends StatelessWidget {
+class MovieDetailsScreen extends StatefulWidget {
   static const String routeName = '/movieDetails';
   final int movieId;
 
   MovieDetailsScreen({super.key, required this.movieId});
 
   @override
+  State<MovieDetailsScreen> createState() => _MovieDetailsScreenState();
+}
+
+class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
+  bool isFavourite = false;
+
+  @override
+  void initState() {
+    super.initState();
+    checkIfFavourite();
+
+    final int movieId = widget.movieId;
+    Future.microtask(() {
+      final cubit = BlocProvider.of<MoviesCubit>(context);
+      cubit.getMovieDetailsById(movieId);
+      cubit.getMovieImagesById(movieId);
+      cubit.getMovieCreditsById(movieId);
+    });
+  }
+
+  void checkIfFavourite() async {
+    final favs = await FavouritesLocalService.getFavourites();
+    setState(() {
+      isFavourite = favs.any((movie) => movie.movieId == widget.movieId);
+    });
+  }
+
+  void toggleFavourite(Movie movie) async {
+    if (isFavourite) {
+      await FavouritesLocalService.removeFromFavouritesById(widget.movieId);
+    } else {
+      await FavouritesLocalService.addToFavourites(movie);
+    }
+
+    setState(() {
+      isFavourite = !isFavourite;
+    });
+  }
+
+  Movie convertToMovie(MovieDetailsResponse response) {
+    return Movie(
+      movieId: response.id.toString(),
+      name: response.title ?? '',
+      rating: response.voteAverage ?? 0.0,
+      imageURL: 'https://image.tmdb.org/t/p/w500${response.posterPath}',
+      year: response.releaseDate?.split('-').first ?? '',
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
-    print("🟢 MovieDetailsScreen Loaded with ID: $movieId");
-    if (movieId == null) {
+    print("🟢 MovieDetailsScreen Loaded with ID: ${widget.movieId}");
+    if (widget.movieId == null) {
       return Scaffold(
         body: Center(
           child: Text("Error: Movie ID is missing"),
@@ -24,14 +77,18 @@ class MovieDetailsScreen extends StatelessWidget {
 
     var cubit = BlocProvider.of<MoviesCubit>(context);
 
-    Future.microtask(() {
-      cubit.getMovieDetailsById(movieId);
-      cubit.getMovieImagesById(movieId);
-      cubit.getMovieCreditsById(movieId);
-    });
-
     return BlocConsumer<MoviesCubit, MoviesStates>(
       listener: (context, state) async {
+        if (state is DetailsLoadingStates) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                "Loading....",
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
+            ),
+          );
+        }
         if (state is FailedToDetailsStates) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -51,6 +108,13 @@ class MovieDetailsScreen extends StatelessWidget {
                 SnackBar(content: Text("Could not launch YouTube")));
           }
         }
+        if (state is DetailsSuccessStates) {
+          final movieDetails = cubit.movieDetailsResponse;
+          if (movieDetails != null) {
+            final movie = convertToMovie(movieDetails);
+            FavouritesLocalService.addToHistory(movie);
+          }
+        }
       },
       builder: (context, state) {
         return SafeArea(
@@ -68,7 +132,8 @@ class MovieDetailsScreen extends StatelessWidget {
                               alignment: AlignmentDirectional.topCenter,
                               children: [
                                 Image.network(
-                                  "https://image.tmdb.org/t/p/w500${cubit.movieDetailsResponse?.posterPath}" ?? "",
+                                  "https://image.tmdb.org/t/p/w500${cubit.movieDetailsResponse?.posterPath}" ??
+                                      "",
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.only(
@@ -90,8 +155,21 @@ class MovieDetailsScreen extends StatelessWidget {
                                               color: Colors.white,
                                             ),
                                           ),
-                                          Icon(
-                                            Icons.bookmark_rounded,
+                                          IconButton(
+                                            onPressed: () {
+                                              final movieDetails =
+                                                  BlocProvider.of<MoviesCubit>(
+                                                          context)
+                                                      .movieDetailsResponse!;
+                                              final movie =
+                                                  convertToMovie(movieDetails);
+                                              toggleFavourite(movie);
+                                            },
+                                            icon: Icon(
+                                              isFavourite
+                                                  ? Icons.bookmark
+                                                  : Icons.bookmark_border,
+                                            ),
                                             color: Colors.white,
                                           ),
                                         ],
@@ -154,7 +232,7 @@ class MovieDetailsScreen extends StatelessWidget {
                                   ElevatedButton(
                                     onPressed: () {
                                       MoviesCubit.get(context)
-                                          .getMovieVideo(movieId);
+                                          .getMovieVideo(widget.movieId);
                                     },
                                     style: ButtonStyle(
                                       padding: WidgetStatePropertyAll(

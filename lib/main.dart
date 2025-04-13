@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:movie_app/Blocs/auth_cupit.dart';
 import 'package:movie_app/Blocs/movies_cubit.dart';
 import 'package:movie_app/My_Theme/dark_theme.dart';
@@ -15,10 +16,12 @@ import 'package:movie_app/screens/Home_Screens/tabs/profile/edit_profile.dart';
 import 'package:movie_app/shared/network/cache_network.dart';
 import 'package:provider/provider.dart';
 
+import 'Model/movie.dart';
 import 'My_Provider/my_provider.dart';
 import 'My_Theme/light_theme.dart';
 import 'Observer/bloc_observer.dart';
 import 'constants/constants.dart';
+
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,6 +32,9 @@ Future<void> main() async {
   token = CacheNetwork.getCacheData(key: 'token');
   print("token is : $token");
   print("Onboarding Done: $onboardingDone");
+  await Hive.initFlutter();
+  Hive.registerAdapter(MovieAdapter());
+  await Hive.openBox<Movie>('favouritesBox');
   runApp(ChangeNotifierProvider(
     create: (context) => MyProvider(),
     child: EasyLocalization(

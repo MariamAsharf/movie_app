@@ -1,3 +1,4 @@
+import 'package:movie_app/Blocs/movies_cubit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CacheNetwork {
@@ -19,4 +20,5 @@ class CacheNetwork {
   static Future<bool> deleteCacheMovie({required String key}) async {
     return await sharedPref.remove(key);
   }
+
 }

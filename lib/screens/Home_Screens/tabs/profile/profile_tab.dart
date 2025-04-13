@@ -31,6 +31,8 @@ class _ProfileTabState extends State<ProfileTab> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    var cubit = BlocProvider.of<MoviesCubit>(context);
+
     return BlocConsumer<MoviesCubit, MoviesStates>(
       listener: (context, state) {
         if (state is UpdateUserSuccessStates) {
@@ -39,13 +41,16 @@ class _ProfileTabState extends State<ProfileTab> with TickerProviderStateMixin {
       },
       builder: (context, state) {
         if (state is UserLoadingStates) {
-          return Center(child: CircularProgressIndicator());
+          return Center(
+            child: CircularProgressIndicator(),
+          );
         }
 
         if (state is FailedToUserStates) {
           return Center(child: Text(state.message));
         }
-        if (state is UserSuccessStates) {
+
+        if (cubit.userModel != null) {
           return Column(
             children: [
               ProfileWidget(),
@@ -57,23 +62,18 @@ class _ProfileTabState extends State<ProfileTab> with TickerProviderStateMixin {
                   labelColor: Colors.amber,
                   unselectedLabelColor: Colors.white,
                   indicatorColor: Colors.amber,
-                  labelStyle: Theme.of(context)
-                      .textTheme
-                      .titleSmall
-                      ?.copyWith(fontWeight: FontWeight.w400),
-                  tabs: [
+                  labelStyle: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w400,
+                      ),
+                  tabs: const [
                     Tab(
-                        icon: Icon(
-                          Icons.list,
-                          size: 28,
-                        ),
-                        text: "Watch List"),
+                      icon: Icon(Icons.list, size: 28),
+                      text: "Watch List",
+                    ),
                     Tab(
-                        icon: Icon(
-                          Icons.folder,
-                          size: 28,
-                        ),
-                        text: "History"),
+                      icon: Icon(Icons.folder, size: 28),
+                      text: "History",
+                    ),
                   ],
                 ),
               ),
@@ -89,6 +89,7 @@ class _ProfileTabState extends State<ProfileTab> with TickerProviderStateMixin {
             ],
           );
         }
+
         return Container();
       },
     );
